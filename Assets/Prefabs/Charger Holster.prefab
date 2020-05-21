@@ -1,0 +1,179 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4157521310924617333
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4157521310924617330}
+  - component: {fileID: 4157521310924617334}
+  - component: {fileID: 5818258107479462753}
+  m_Layer: 9
+  m_Name: Charger Holster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4157521310924617330
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157521310924617333}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.046, y: 0.459, z: 0.266}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5708444989548982968}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4157521310924617334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157521310924617333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8748845fab8d8fe4a9f051adddd9ab73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  holsterSlotName: Large Weapon Holster
+  heldObject: {fileID: 5708444989548883608}
+  lockHeldObject: 1
+  allowedTypes: 3
+  infoText: {fileID: 0}
+  uiImage: {fileID: 0}
+  triggerRadius: 0.1
+  sphereCollider: {fileID: 0}
+--- !u!135 &5818258107479462753
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157521310924617333}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1001 &2391985572006599233
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 4157521310924617330}
+    m_Modifications:
+    - target: {fileID: 7929275771036333273, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_Name
+      value: Charger
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036333276, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: myHolster
+      value: 
+      objectReference: {fileID: 4157521310924617334}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.67268974
+      objectReference: {fileID: 0}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.73992467
+      objectReference: {fileID: 0}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 84.55
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ebec3303aaed5864392ea5ea6a35445c, type: 3}
+--- !u!1 &5708444989548883608 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7929275771036333273, guid: ebec3303aaed5864392ea5ea6a35445c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2391985572006599233}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5708444989548982968 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2391985572006599233}
+  m_PrefabAsset: {fileID: 0}
