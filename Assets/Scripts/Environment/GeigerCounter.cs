@@ -1,4 +1,6 @@
 ﻿
+using MetroVR.Util;
+
 using System.Collections;
 using System.Collections.Generic;
 
@@ -32,6 +34,8 @@ namespace MetroVR.Environmental {
             }
         }
 
+        Coroutine longGeiger;
+
         public void EnteringRadiationZone (RadiationZone zone) {
             var str = zone.Strength;
             if (str > activeZoneStrength) {
@@ -43,7 +47,9 @@ namespace MetroVR.Environmental {
                     }
                 } else if (str == 7) {
                     inHeavyRadiationZone = true;
-                    StartCoroutine (LongGeigerAudio ());
+                    longGeiger = StartCoroutine (LongGeigerAudio ());
+                    playerHealth.EnteredHeavyRadioactiveZone ();
+                    PostProcessControl.Instance.EnteredHeavyRadioactiveZone ();
                 }
             }
         }
@@ -60,6 +66,10 @@ namespace MetroVR.Environmental {
                 activeZoneStrength--;
             } else if (str == 7) {
                 inHeavyRadiationZone = false;
+                StopCoroutine (longGeiger);
+                playerHealth.ExitedHeavyRadioactiveZone ();
+                highLevelAudioSource.Stop ();
+                PostProcessControl.Instance.ExitedHeavyRadioactiveZone ();
             }
         }
 
@@ -74,7 +84,7 @@ namespace MetroVR.Environmental {
                 mainAudioSource.Play ();
                 yield return new WaitForSeconds (mainAudioSource.clip.length + (1.5f / activeZoneStrength) + Random.Range (-.125f, .25f));
                 lastClip = temp;
-                Debug.Log (activeZoneStrength);
+                //Debug.Log (activeZoneStrength);
             }
         }
 

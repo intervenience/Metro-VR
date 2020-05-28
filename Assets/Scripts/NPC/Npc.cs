@@ -18,6 +18,8 @@ namespace MetroVR.NPC {
         FightingNpcs
     }
 
+    //Refer to https://github.com/PacktPublishing/Unity-2017-Game-AI-Programming-Third-Edition/blob/master/Chapter06/Assets/Scripts/Samples/CardGame/BehaviorTrees/EnemyBehaviorTree.cs
+
     public class Npc : MonoBehaviour, IDamage {
 
         [SerializeField] protected string npcName;
@@ -49,7 +51,7 @@ namespace MetroVR.NPC {
         protected int tickDelay = 1000; //Milliseconds
         protected int secondaryTickMultiplier = 5;
 
-        protected Transform playerHead, playerHandLeft, playerHandRight;
+        protected Transform playerHead, playerBoundary, playerHandLeft, playerHandRight;
         protected Vector3 playerEstimatedBodyPosition;
 
         protected virtual void Start () {
@@ -61,28 +63,32 @@ namespace MetroVR.NPC {
             nav.Warp (transform.position);
             currentIdle = Random.Range (0, maxIdles);
 
-            if (hostileToPlayer) {
-                state = Vector3.Distance (transform.position, playerHead.position) > 5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
-            } else {
-                state = NpcState.Idle;
-            }
-        }
-
-        protected virtual void FixedUpdate () {
-            if (currentHp > 0) {
+            if (playerHead != null) {
                 if (hostileToPlayer) {
                     state = Vector3.Distance (transform.position, playerHead.position) > 5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
                 } else {
                     state = NpcState.Idle;
                 }
+            }
+        }
 
-                switch (state) {
-                    case NpcState.FightingPlayer:
-                        FightingPlayer ();
-                        break;
-                    case NpcState.MoveToPlayer:
-                        MoveToPlayer ();
-                        break;
+        protected virtual void FixedUpdate () {
+            if (currentHp > 0) {
+                if (playerHead != null) {
+                    if (hostileToPlayer) {
+                        state = Vector3.Distance (transform.position, playerHead.position) > 1.5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
+                    } else {
+                        state = NpcState.Idle;
+                    }
+
+                    switch (state) {
+                        case NpcState.FightingPlayer:
+                            FightingPlayer ();
+                            break;
+                        case NpcState.MoveToPlayer:
+                            MoveToPlayer ();
+                            break;
+                    }
                 }
 
                 SetAnimatorMovementSpeed ();
@@ -109,7 +115,7 @@ namespace MetroVR.NPC {
 
         protected virtual void MoveToPlayer () {
             if (playerHead != null)
-                nav.SetDestination (playerHead.position);
+                nav.SetDestination (new Vector3 (playerHead.position.x, playerBoundary.position.y, playerHead.position.z));
         }
 
         //Task t;
@@ -169,6 +175,7 @@ namespace MetroVR.NPC {
         protected virtual void SetPlayerTransforms () {
             if (VRTK_SDKManager.instance.loadedSetup != null) {
                 playerHead = VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform;
+                playerBoundary = VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform;
                 playerHandLeft = VRTK_SDKManager.instance.loadedSetup.actualLeftController.transform;
                 playerHandRight = VRTK_SDKManager.instance.loadedSetup.actualRightController.transform;
             }

@@ -179,6 +179,7 @@ MonoBehaviour:
   usingState: 0
   itemName: AK Magazine
   itemType: 3
+  handPosition: {fileID: 0}
   ammoType: 1
   maxAmmo: 30
   currentAmmo: 30

@@ -15,6 +15,7 @@ namespace MetroVR {
         [Header ("Item Properties")]
         public string itemName;
         public ItemTypes itemType;
+        public HandPosition handPosition;
 
     }
 

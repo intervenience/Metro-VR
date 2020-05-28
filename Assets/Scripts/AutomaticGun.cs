@@ -20,7 +20,6 @@ namespace MetroVR {
         }
         Rigidbody rb;
         [SerializeField] Transform nozzle;
-        [SerializeField] GameObject gunFx;
         [SerializeField] ParticleSystem firingFx, shellEjectionFx;
         [SerializeField] AudioSource[] audioSources;
         [SerializeField] AudioClip[] firingSounds;
@@ -94,7 +93,6 @@ namespace MetroVR {
                         break;
                 }
 
-                //gunFx.SetActive (true);
                 firingFx.Play ();
                 shellEjectionFx.Play ();
                 recoil = new Vector3 (Random.Range (-0.05f, 0.05f) * recoilForce, Random.Range (-0.05f, 0.05f) * recoilForce, Random.Range (0.05f, 0.15f) * recoilForce);
@@ -113,8 +111,6 @@ namespace MetroVR {
                 magazine.RemoveRound ();
                 yield return new WaitForSeconds (timeBetweenShots + Random.Range (0f, 0.05f));
             }
-
-            //gunFx.SetActive (false);
         }
 
         public void AttachMagazine (GameObject magObj) {

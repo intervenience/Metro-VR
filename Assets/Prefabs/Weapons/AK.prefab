@@ -5229,9 +5229,9 @@ MonoBehaviour:
   usingState: 0
   itemName: Kalashnikov
   itemType: 0
+  handPosition: {fileID: 0}
   rpm: 600
   nozzle: {fileID: 2081002283211421864}
-  gunFx: {fileID: 2364982274489260149}
   firingFx: {fileID: 5840143786489158554}
   shellEjectionFx: {fileID: 263919866068460455}
   audioSources:
@@ -5672,12 +5672,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f98a78d845bbe114e85c2a0ecded1fd6, type: 3}
---- !u!1 &5257058634224302307 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5638392973968870417, guid: f98a78d845bbe114e85c2a0ecded1fd6,
-    type: 3}
-  m_PrefabInstance: {fileID: 489566832704877810}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5257058634223936707 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5638392973969231921, guid: f98a78d845bbe114e85c2a0ecded1fd6,
@@ -5696,6 +5690,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 231b8e42814d2c046b5504519f001cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5257058634224302307 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5638392973968870417, guid: f98a78d845bbe114e85c2a0ecded1fd6,
+    type: 3}
+  m_PrefabInstance: {fileID: 489566832704877810}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1886052190162971844
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6059,12 +6059,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f47cb9d88f4bc6c4bb7441e962c2c1a5, type: 3}
---- !u!1 &2364982274489260149 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100006, guid: f47cb9d88f4bc6c4bb7441e962c2c1a5,
-    type: 3}
-  m_PrefabInstance: {fileID: 2364982274489229011}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2364982274488829013 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400006, guid: f47cb9d88f4bc6c4bb7441e962c2c1a5,

@@ -55,3 +55,16 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+Assets/Scripts/Util/BehaviourTree/Sequence.cs.meta
+Assets/Scripts/Util/BehaviourTree/Sequence.cs
+Assets/Scripts/Util/BehaviourTree/Selector.cs.meta
+Assets/Scripts/Util/BehaviourTree/Selector.cs
+Assets/Scripts/Util/BehaviourTree/NodeStates.cs.meta
+Assets/Scripts/Util/BehaviourTree/NodeStates.cs
+Assets/Scripts/Util/BehaviourTree/Node.cs.meta
+Assets/Scripts/Util/BehaviourTree/Node.cs
+Assets/Scripts/Util/BehaviourTree/Inverter.cs.meta
+Assets/Scripts/Util/BehaviourTree/Inverter.cs
+Assets/Scripts/Util/BehaviourTree/ActionNode.cs.meta
+Assets/Scripts/Util/BehaviourTree/ActionNode.cs
+Assets/Scripts/Util/BehaviourTree.meta

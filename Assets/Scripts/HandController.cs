@@ -9,6 +9,10 @@ using VRTK.GrabAttachMechanics;
 
 namespace MetroVR {
 
+    public class HandPosition : ScriptableObject {
+        Vector3 armaturePos, armatureRot;
+    }
+
     public enum HandLeftOrRight {
         Left,
         Right
@@ -27,6 +31,8 @@ namespace MetroVR {
         }
         [SerializeField] GameObject targetHand;
         [SerializeField] Animator animator;
+        [SerializeField] Transform handArmatureTransform;
+        [SerializeField] Vector3 handArmatureOriginalPosition, handArmatureOriginalRotation;
 
         public Item HeldItem {
             get {
@@ -74,6 +80,9 @@ namespace MetroVR {
                     if (OnPickedUpRangedWeapon != null) {
                         OnPickedUpRangedWeapon.Invoke (item, activeHand);
                     }
+                }
+                if (item.handPosition != null) {
+
                 }
             }
         }

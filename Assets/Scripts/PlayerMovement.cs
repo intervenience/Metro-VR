@@ -22,8 +22,8 @@ namespace MetroVR {
         [SerializeField] float deadzone = 0.2f;
 
         [SerializeField] float footstepVolume = 0.15f;
-        [SerializeField] AudioSource legsAudioSource, torsoAudioSource;
-        [SerializeField] AudioClip[] footsteps, jumpSounds, landingSounds;
+        [SerializeField] AudioSource legsAudioSource, torsoAudioSource, rotationAudioSource;
+        [SerializeField] AudioClip[] footsteps, jumpSounds, landingSounds, rotationClips;
 
         VRTK_ControllerEvents leftEvents, rightEvents;
         Transform head = null;
@@ -49,7 +49,7 @@ namespace MetroVR {
             //target for rigidbody and rotation movement is sender.loadedSetup.transform.GetChild (0)
             //aka the camera rig
             //target for the player collider is a new child of that object
-            cameraRig = sender.loadedSetup.transform.GetChild (0);
+            cameraRig = sender.loadedSetup.actualBoundaries.transform;
             cameraRigRb = cameraRig.gameObject.AddComponent<Rigidbody> ();
             cameraRigRb.constraints = RigidbodyConstraints.FreezeRotation;
             cameraRigRb.mass = 25;
@@ -97,6 +97,7 @@ namespace MetroVR {
 
         Vector3 moveDirection = Vector3.zero;
         bool attemptJump = false;
+        bool playRotationSound = false;
 
         void Update () {
             if (Levels.Level01.Instance.canMove) {
@@ -114,6 +115,13 @@ namespace MetroVR {
                         torsoAudioSource.clip = jumpSounds[Random.Range (0, jumpSounds.Length)];
                         torsoAudioSource.Play ();
                     }
+                    if (playRotationSound) {
+                        var f = Random.Range (0f, 1f);
+                        if (f < 0.4f) {
+                            rotationAudioSource.clip = rotationClips[Random.Range (0, rotationClips.Length)];
+                            rotationAudioSource.Play ();
+                        }
+                    }
                 }
             }
         }
@@ -123,6 +131,12 @@ namespace MetroVR {
         float rotationX = 0;
         float rotationY = 0;
         void GetMovementInputs (VRTK_ControllerEvents movement, VRTK_ControllerEvents rotation) {
+            if (rotationX == 0 && (rotation.GetTouchpadAxis ().x > 0.3f || rotation.GetTouchpadAxis ().x < 0.3f)) {
+                playRotationSound = true;
+            } else {
+                playRotationSound = false;
+            }
+
             movementX = movement.GetTouchpadAxis ().x;
             movementY = movement.GetTouchpadAxis ().y;
             rotationX = rotation.GetTouchpadAxis ().x;
@@ -143,7 +157,6 @@ namespace MetroVR {
             }
 
             //We only want the player to jump on a positive Y-axis movement
-
             if (rotationY > deadzone)
                 attemptJump = true;
             else

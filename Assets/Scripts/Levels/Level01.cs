@@ -208,7 +208,7 @@ namespace MetroVR.Levels {
 
         public void PlayerReachedEndStairs () {
             //do outro thing
-            MetroVR.Util.VignetteEffects.Instance.PlayerDeath ();
+            MetroVR.Util.PostProcessControl.Instance.PlayerDeath ();
             StartCoroutine (Delay ());
         }
 

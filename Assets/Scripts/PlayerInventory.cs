@@ -24,13 +24,14 @@ namespace MetroVR {
 
         public static PlayerInventory Instance;
 
-        public Transform headPosition, torso, legs;
+        public Transform head, torso, legs;
 
         public Transform mainGunSlotLeft, mainGunSlotRight, hipSlotLeft, hipSlotRight, ammoSlot, chargerSlot, maskSlot;
 
         public GameObject ammoObj;
 
         [SerializeField] GameObject akMagPrefab, shotgunShellPrefab;
+        [SerializeField] GameObject filterPrefab;
 
         public int fivefivesixAmmo = 120;
         public int sevensixtwoAmmo = 270;
@@ -89,14 +90,14 @@ namespace MetroVR {
         void HandController_OnPickedUpRangedWeapon (Item item, HandLeftOrRight leftOrRight) {
             //We destroy the old ammo piece here though
             //Debug.Log ("Picked up a ranged weapon");
-            if (item.GetComponent <Rigidbody> () != null) {
+            /*if (item.GetComponent <Rigidbody> () != null) {
                 item.GetComponent<Rigidbody> ().useGravity = true;
             }
             if (ammoObj != null)
                 Destroy (ammoObj);
             heldWeapon = item;
             //Debug.Log (heldWeapon);
-            SpawnCorrectAmmo ();
+            SpawnCorrectAmmo ();*/
         }
 
         void SpawnCorrectAmmo () {
@@ -345,22 +346,27 @@ namespace MetroVR {
 
         void PlayerMovement_OnPlayerCollidersSetUp (Transform torso, Transform legs) {
             this.torso = torso;
+            this.legs = legs;
             mainGunSlotRight.parent = this.torso;
             mainGunSlotLeft.parent = this.torso;
-            chargerSlot.parent = this.torso;
-            ammoSlot.parent = this.torso;
+            chargerSlot.parent = this.legs;
+            ammoSlot.parent = this.legs;
 
             //X is the horizontal location,
             //Y is the vertical location
             //Z is the forward location
-            mainGunSlotRight.position = this.torso.position + new Vector3 (0.2f, 0.05f, -.08f);
-            mainGunSlotLeft.position = this.torso.position + new Vector3 (-0.2f, 0.05f, -.08f);
-            chargerSlot.position = this.torso.position + new Vector3 (0.085f, 0.74f * this.torso.localPosition.y, 0.1f);
-            ammoSlot.position = this.torso.position + new Vector3 (-0.085f, 0.74f * this.torso.localPosition.y, 0.1f);
+            //mainGunSlotRight.position = this.torso.position + new Vector3 (0.2f, 0.05f, -.08f);
+            //mainGunSlotLeft.position = this.torso.position + new Vector3 (-0.2f, 0.05f, -.08f);
+            //chargerSlot.position = this.torso.position + new Vector3 (0.085f, 0.74f * this.torso.localPosition.y, 0.25f);
+            //ammoSlot.position = this.torso.position + new Vector3 (-0.085f, 0.74f * this.torso.localPosition.y, 0.25f);
+            mainGunSlotRight.localPosition = Vector3.zero;
+            mainGunSlotLeft.localPosition = Vector3.zero;
+            chargerSlot.localPosition = Vector3.zero;
+            ammoSlot.localPosition = Vector3.zero;
         }
-        
+
         void VRTK_LoadedSetupChanged (VRTK_SDKManager sender, VRTK_SDKManager.LoadedSetupChangeEventArgs e) {
-            headPosition = sender.loadedSetup.actualHeadset.transform;
+            head = sender.loadedSetup.actualHeadset.transform;
 
             canvasTransform.parent = VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform;
             canvasTransform.localPosition = new Vector3 (0, 0, 0.65f);
@@ -368,10 +374,16 @@ namespace MetroVR {
 
         void FixedUpdate () {
             if (torso != null) {
-                mainGunSlotRight.localPosition = new Vector3 (0.2f, 0.3f * torso.localPosition.y, -.08f);
-                mainGunSlotLeft.localPosition = new Vector3 (-0.2f, 0.3f * torso.localPosition.y, -.08f);
-                chargerSlot.localPosition = new Vector3 (0.11f, 0.05f, 0.3f);
-                ammoSlot.localPosition = new Vector3 (-0.11f, 0.05f, 0.3f);
+                //mainGunSlotRight.localPosition = new Vector3 (0.211f, 0.143f, 1f);
+                //mainGunSlotLeft.localPosition = new Vector3 (-0.211f, 0.143f, 1f);
+
+                mainGunSlotRight.localPosition = new Vector3 (0.211f, head.localPosition.y * 1.05f, 1f);
+                mainGunSlotLeft.localPosition = new Vector3 (-0.211f, head.localPosition.y * 1.05f, 1f);
+                Debug.Log ("head " + head.localPosition.y);
+                Debug.Log ("torso " + torso.localPosition.y);
+                chargerSlot.localPosition = new Vector3 (0.2f, 0.8f, 0.1f);
+                ammoSlot.localPosition = new Vector3 (-0.2f, 0.8f, 0.1f);
+                Debug.Log ("slot " + mainGunSlotLeft.position.y);
             }
         }
 

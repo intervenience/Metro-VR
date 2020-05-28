@@ -25,12 +25,10 @@ namespace MetroVR {
 
         void OnTriggerEnter (Collider collider) {
             if (collider.tag == "Magazine") {
-                Debug.Log ("Got magazine");
                 var m = collider.GetComponentInParent<Magazine> ();
                 nearbyMagazine = m;
 
                 if (m.itemName == "AK Magazine" && gun.itemName == "Kalashnikov") {
-                    Debug.Log ("matches ak");
                     closestControllerEvents = m.GetGrabbingObject ().GetComponent<VRTK_ControllerEvents> ();
                     closestControllerEvents.GripReleased += ClosestControllerEvents_GripReleased;
                 }
@@ -38,7 +36,6 @@ namespace MetroVR {
         }
 
         void ClosestControllerEvents_GripReleased (object sender, ControllerInteractionEventArgs e) {
-            Debug.Log ("Detected grip release");
             gun.AttachMagazine (nearbyMagazine.gameObject);
 
             closestControllerEvents.GripReleased -= ClosestControllerEvents_GripReleased;
@@ -48,7 +45,6 @@ namespace MetroVR {
         void OnTriggerExit (Collider collider) {
             if (nearbyMagazine != null) {
                 if (collider.gameObject == nearbyMagazine.gameObject) {
-
                     closestControllerEvents.GripReleased -= ClosestControllerEvents_GripReleased;
                     closestControllerEvents = null;
                 }
