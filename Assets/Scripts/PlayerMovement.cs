@@ -182,11 +182,13 @@ namespace MetroVR {
                     playerLegsCollider.center = new Vector3 (0, 0.21f * head.localPosition.y, 0);
 
                     playerTorsoTransform.localPosition = new Vector3 (head.localPosition.x / 2f, 0.42f * head.localPosition.y, head.localPosition.z / 2f);
-                    //var targetRot = Quaternion.LookRotation (head.position - playerTorsoTransform.position);
-                    //playerTorsoTransform.rotation = targetRot; //* Quaternion.Euler (0, 0, head.rotation.eulerAngles.y);
+                    var targetRot = Quaternion.LookRotation (head.position - playerTorsoTransform.position);
+                    playerTorsoTransform.rotation = targetRot * Quaternion.Euler (0, 0, head.rotation.eulerAngles.y);
+                    //Debug.Log (head.rotation.eulerAngles.y);
+                    //Debug.Log (playerTorsoTransform.rotation.eulerAngles.y);
 
-                    playerTorsoTransform.LookAt (head.position);
-                    playerTorsoTransform.rotation = Quaternion.Euler (playerTorsoTransform.rotation.x, playerTorsoTransform.rotation.y, head.rotation.eulerAngles.y);
+                    //playerTorsoTransform.LookAt (head.position, -playerTorsoTransform.up);
+                    //playerTorsoTransform.rotation = Quaternion.Euler (playerTorsoTransform.rotation.x, playerTorsoTransform.rotation.y, head.rotation.eulerAngles.y);
                 } else {
                     positionBeforeLean = head.localPosition;
                     playerLegsTransform.localPosition = new Vector3 (head.localPosition.x, 0, head.localPosition.z);
@@ -197,12 +199,14 @@ namespace MetroVR {
                     playerTorsoTransform.localRotation = Quaternion.identity * Quaternion.Euler (-90, 0, head.rotation.eulerAngles.y);
                 }
 
+                playerLegsTransform.localRotation = Quaternion.Euler (0, head.rotation.eulerAngles.y, 0);
+
                 playerLegsCollider.height = 0.42f * head.localPosition.y;
                 playerTorsoCollider.height = 0.42f * head.localPosition.y;
 
                 cameraRigRb.velocity = new Vector3 (moveDirection.x, cameraRigRb.velocity.y, moveDirection.z);
                 timeSinceLastFootstep += Time.fixedDeltaTime;
-
+                
                 if (!previousGroundedState && isGrounded) {
                     //If we weren't grounded and now we are, play sound effect if y velocity < -3f
                     if (cameraRigRb.velocity.y < -3f) {

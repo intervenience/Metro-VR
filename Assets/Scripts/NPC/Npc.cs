@@ -54,6 +54,13 @@ namespace MetroVR.NPC {
         protected Transform playerHead, playerBoundary, playerHandLeft, playerHandRight;
         protected Vector3 playerEstimatedBodyPosition;
 
+        public int ID {
+            get {
+                return id;
+            }
+        }
+        [SerializeField] private int id;
+
         protected virtual void Start () {
             animator = GetComponent<Animator> ();
             SetPlayerTransforms ();
@@ -70,6 +77,10 @@ namespace MetroVR.NPC {
                     state = NpcState.Idle;
                 }
             }
+        }
+
+        public virtual void ForceSetHP (float hp) {
+            this.currentHp = hp;
         }
 
         protected virtual void FixedUpdate () {

@@ -178,6 +178,7 @@ MonoBehaviour:
   touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
   usingState: 0
   itemName: AK Magazine
+  id: 0
   itemType: 3
   handPosition: {fileID: 0}
   ammoType: 1
@@ -385,7 +386,7 @@ GameObject:
   - component: {fileID: 428506409901209056}
   m_Layer: 8
   m_Name: AK_Magazine_Collider_no_offset
-  m_TagString: Magazine
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

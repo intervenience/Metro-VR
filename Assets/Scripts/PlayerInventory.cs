@@ -57,20 +57,23 @@ namespace MetroVR {
             rightHandInfo.text = "";
         }
 
-        VRTK_ControllerEvents leftController, rightController;
+        GameObject leftController, rightController;
+        VRTK_ControllerEvents leftControllerEvents, rightControllerEvents;
 
         void OnEnable () {
             VRTK_SDKManager.instance.LoadedSetupChanged += VRTK_LoadedSetupChanged;
             HandController.OnPickedUpRangedWeapon += HandController_OnPickedUpRangedWeapon;
             PlayerMovement.OnPlayerCollidersSetUp += PlayerMovement_OnPlayerCollidersSetUp;
 
-            leftController = GameObject.FindGameObjectWithTag ("Left").GetComponent<VRTK_ControllerEvents> ();
-            leftController.GripPressed += LeftController_GripPressed;
-            leftController.GripReleased += LeftController_GripReleased;
+            leftController = GameObject.FindGameObjectWithTag ("Left");
+            leftControllerEvents = leftController.GetComponent<VRTK_ControllerEvents> ();
+            leftControllerEvents.GripPressed += LeftController_GripPressed;
+            leftControllerEvents.GripReleased += LeftController_GripReleased;
 
-            rightController = GameObject.FindGameObjectWithTag ("Right").GetComponent<VRTK_ControllerEvents> ();
-            rightController.GripPressed += RightController_GripPressed;
-            rightController.GripReleased += RightController_GripReleased;
+            rightController = GameObject.FindGameObjectWithTag ("Right");
+            rightControllerEvents = rightController.GetComponent<VRTK_ControllerEvents> ();
+            rightControllerEvents.GripPressed += RightController_GripPressed;
+            rightControllerEvents.GripReleased += RightController_GripReleased;
         }
 
         void OnDisable () {
@@ -78,11 +81,11 @@ namespace MetroVR {
             HandController.OnPickedUpRangedWeapon -= HandController_OnPickedUpRangedWeapon;
             PlayerMovement.OnPlayerCollidersSetUp -= PlayerMovement_OnPlayerCollidersSetUp;
 
-            rightController.GripPressed -= RightController_GripPressed;
-            rightController.GripReleased -= RightController_GripReleased;
+            rightControllerEvents.GripPressed -= RightController_GripPressed;
+            rightControllerEvents.GripReleased -= RightController_GripReleased;
 
-            leftController.GripPressed -= LeftController_GripPressed;
-            leftController.GripReleased -= LeftController_GripReleased;
+            leftControllerEvents.GripPressed -= LeftController_GripPressed;
+            leftControllerEvents.GripReleased -= LeftController_GripReleased;
         }
 
         Item heldWeapon;
@@ -152,17 +155,17 @@ namespace MetroVR {
                     i = null;
                 }
 
-                //If the user is not holding an item,
-                //Activate the item in the hierarchy
+                //If the user is not holding an item
                 if (i == null) {
                     if (holster.HolsterSlotName == "Ammo Pouch") {
                         if (ammoObj != null) {
-                            ammoObj.SetActive (true);
                             switch (handController.LeftOrRight) {
                                 case HandLeftOrRight.Left:
+                                    leftItemToMove = ammoObj;
                                     leftHandInfo.text = ammoObj.GetComponent<Item> ().itemName;
                                     break;
                                 case HandLeftOrRight.Right:
+                                    rightItemToMove = ammoObj;
                                     rightHandInfo.text = ammoObj.GetComponent<Item> ().itemName;
                                     break;
                             }
@@ -170,19 +173,19 @@ namespace MetroVR {
                     } else if (holster.HolsterSlotName == "Charger Holster") {
                         if (handController.LeftOrRight == HandLeftOrRight.Right) {
                             rightHandInfo.text = "Charger";
-                            chargerSlot.transform.GetChild (0).gameObject.SetActive (true);
+                            //chargerSlot.transform.GetChild (0).gameObject.SetActive (true);
                         }
                     } else {
-                        //We expect there to be only 1 child gameobject so we only activate the first
+                        //We expect there to be only 1 child gameobject so we only grab info from the first
                         if (holster.transform.childCount > 0) {
                             holster.transform.GetChild (0).gameObject.SetActive (true);
                             switch (handController.LeftOrRight) {
                                 case HandLeftOrRight.Left:
-                                    leftItemToMoveToHolster = holster.transform.GetChild (0).gameObject;
+                                    leftItemToMove = holster.transform.GetChild (0).gameObject;
                                     leftHandInfo.text = holster.transform.GetChild (0).gameObject.GetComponent<Item> ().itemName;
                                     break;
                                 case HandLeftOrRight.Right:
-                                    rightItemToMoveToHolster = holster.transform.GetChild (0).gameObject;
+                                    rightItemToMove = holster.transform.GetChild (0).gameObject;
                                     rightHandInfo.text = holster.transform.GetChild (0).gameObject.GetComponent<Item> ().itemName;
                                     break;
                             }
@@ -206,12 +209,12 @@ namespace MetroVR {
                     } else if (i.itemType == holster.allowedTypes) {
                         switch (handController.LeftOrRight) {
                             case HandLeftOrRight.Left:
-                                leftItemToMoveToHolster = i.gameObject;
+                                leftItemToMove = i.gameObject;
                                 leftHolsterToMoveItemTo = holster;
                                 leftHandInfo.text = holster.HolsterSlotName;
                                 break;
                             case HandLeftOrRight.Right:
-                                rightItemToMoveToHolster = i.gameObject;
+                                rightItemToMove = i.gameObject;
                                 rightHolsterToMoveItemTo = holster;
                                 rightHandInfo.text = holster.HolsterSlotName;
                                 break;
@@ -230,7 +233,7 @@ namespace MetroVR {
             }
         }
 
-        GameObject rightItemToMoveToHolster, leftItemToMoveToHolster;
+        GameObject rightItemToMove, leftItemToMove;
         Holster rightHolsterToMoveItemTo, leftHolsterToMoveItemTo;
 
         void CheckAmmoAfterDelay () {
@@ -248,49 +251,62 @@ namespace MetroVR {
 
         void RightController_GripPressed (object sender, ControllerInteractionEventArgs e) {
             CheckAmmoAfterDelay ();
-            if (rightItemToMoveToHolster != null) {
-                Debug.Log ("Grip pressed, and we found the object " + rightItemToMoveToHolster);
-                rightItemToMoveToHolster.GetComponent<Rigidbody> ().useGravity = true;
-                if (rightItemToMoveToHolster.GetComponent <VRTK.GrabAttachMechanics.VRTK_BaseJointGrabAttach> ()) {
-                    rightItemToMoveToHolster.transform.parent = null;
-                }
-                rightItemToMoveToHolster = null;
+            if (rightItemToMove != null) {
+                Debug.Log ("Grip pressed, and we found the object " + rightItemToMove);
+                rightItemToMove.GetComponent<Rigidbody> ().isKinematic = false;
+                var touch = rightController.GetComponent<VRTK_InteractTouch> ();
+                touch.ForceTouch (rightItemToMove);
+                Debug.Log (touch.TouchedObject);
+                var grab = rightController.GetComponent<VRTK_InteractGrab> ();
+                grab.AttemptGrab ();
+                Debug.Log (grab.GrabbedObject);
+                /*if (rightItemToMove.GetComponent <VRTK.GrabAttachMechanics.VRTK_BaseJointGrabAttach> ()) {
+                    rightItemToMove.transform.parent = null;
+                }*/
+                rightItemToMove = null;
+                Debug.Log ("End of grip press callback");
             }
         }
 
         void LeftController_GripPressed (object sender, ControllerInteractionEventArgs e) {
             CheckAmmoAfterDelay ();
-            if (leftItemToMoveToHolster != null) {
-                Debug.Log ("Grip pressed, and we found the object " + leftItemToMoveToHolster);
-                leftItemToMoveToHolster.GetComponent<Rigidbody> ().useGravity = true; 
-                if (leftItemToMoveToHolster.GetComponent<VRTK.GrabAttachMechanics.VRTK_BaseJointGrabAttach> ()) {
-                    leftItemToMoveToHolster.transform.parent = null;
+            if (leftItemToMove != null) {
+                Debug.Log ("Grip pressed, and we found the object " + leftItemToMove);
+                leftItemToMove.GetComponent<Rigidbody> ().isKinematic = false;
+                var touch = leftController.GetComponent<VRTK_InteractTouch> ();
+                touch.ForceTouch (leftItemToMove);
+                Debug.Log (touch.TouchedObject);
+                var grab = leftController.GetComponent<VRTK_InteractGrab> ();
+                grab.AttemptGrab ();
+                Debug.Log (grab.GrabbedObject);
+                if (leftItemToMove.GetComponent<VRTK.GrabAttachMechanics.VRTK_BaseJointGrabAttach> ()) {
+                    leftItemToMove.transform.parent = null;
                 }
-                leftItemToMoveToHolster = null;
+                leftItemToMove = null;
             }
         }
 
         void RightController_GripReleased (object sender, ControllerInteractionEventArgs e) {
             Debug.Log ("Right controller grip released");
-            if (rightItemToMoveToHolster != null && rightHolsterToMoveItemTo != null) {
+            if (rightItemToMove != null && rightHolsterToMoveItemTo != null) {
                 Debug.Log ("Right controller is holding an object, and is in range of a holster");
                 //rightItemToMoveToHolster.transform.parent = rightHolsterToMoveItemTo.transform;
                 //rightItemToMoveToHolster.SetActive (false);
 
-                MoveObjectToHolster (rightItemToMoveToHolster, rightHolsterToMoveItemTo.gameObject);
-                rightItemToMoveToHolster = null;
+                MoveObjectToHolster (rightItemToMove, rightHolsterToMoveItemTo.gameObject);
+                rightItemToMove = null;
             }
         }
 
         void LeftController_GripReleased (object sender, ControllerInteractionEventArgs e) {
             Debug.Log ("Left controller grip released");
-            if (leftItemToMoveToHolster != null && leftHolsterToMoveItemTo != null) {
+            if (leftItemToMove != null && leftHolsterToMoveItemTo != null) {
                 Debug.Log ("Left controller is holding an object, and is in range of a holster");
                 //leftItemToMoveToHolster.transform.parent = leftHolsterToMoveItemTo.transform;
                 //leftItemToMoveToHolster.SetActive (false);
 
-                MoveObjectToHolster (leftItemToMoveToHolster, leftHolsterToMoveItemTo.gameObject);
-                leftItemToMoveToHolster = null;
+                MoveObjectToHolster (leftItemToMove, leftHolsterToMoveItemTo.gameObject);
+                leftItemToMove = null;
             }
         }
 
@@ -303,13 +319,13 @@ namespace MetroVR {
                 obj.GetComponent<VRTK_InteractableObject> ().ForceStopInteracting ();
                 obj.transform.localPosition = Vector3.zero;
                 var rb = obj.GetComponent<Rigidbody> ();
-                rb.useGravity = false;
+                rb.isKinematic = true;
                 StartCoroutine (SetVelocitiesToZeroAfterDelay (rb, holster.transform));
             }
         }
 
         IEnumerator SetVelocitiesToZeroAfterDelay (Rigidbody rb, Transform parent) {
-            yield return new WaitForSeconds (0.05f);
+            yield return new WaitForSeconds (0.02f);
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.transform.SetParent (parent);
@@ -376,14 +392,10 @@ namespace MetroVR {
             if (torso != null) {
                 //mainGunSlotRight.localPosition = new Vector3 (0.211f, 0.143f, 1f);
                 //mainGunSlotLeft.localPosition = new Vector3 (-0.211f, 0.143f, 1f);
-
-                mainGunSlotRight.localPosition = new Vector3 (0.211f, head.localPosition.y * 1.05f, 1f);
-                mainGunSlotLeft.localPosition = new Vector3 (-0.211f, head.localPosition.y * 1.05f, 1f);
-                Debug.Log ("head " + head.localPosition.y);
-                Debug.Log ("torso " + torso.localPosition.y);
+                mainGunSlotRight.localPosition = new Vector3 (0.211f, .2f, head.localPosition.y * 1.05f - torso.localPosition.y);
+                mainGunSlotLeft.localPosition = new Vector3 (-0.211f, .2f, head.localPosition.y * 1.05f - torso.localPosition.y);
                 chargerSlot.localPosition = new Vector3 (0.2f, 0.8f, 0.1f);
                 ammoSlot.localPosition = new Vector3 (-0.2f, 0.8f, 0.1f);
-                Debug.Log ("slot " + mainGunSlotLeft.position.y);
             }
         }
 

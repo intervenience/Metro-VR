@@ -88,9 +88,9 @@ namespace MetroVR {
                 connectedInteractable.SendMessage ("ChargerDisabled");
             }
 
-            transform.parent = myHolster.transform;
-            transform.localPosition = Vector3.zero;
-            gameObject.SetActive (false);
+            //transform.parent = myHolster.transform;
+            //transform.localPosition = Vector3.zero;
+            //gameObject.SetActive (false);
         }
 
         void Torch_OnBatteryUpdate () {
@@ -98,12 +98,7 @@ namespace MetroVR {
         }
 
         void SetBatteryNeedlePosition () {
-            float delta = 0;
-            if (minRotation > maxRotation) { 
-                delta = maxRotation - minRotation;
-            } else {
-                delta = minRotation - maxRotation;
-            }
+            float delta = Mathf.Abs (maxRotation - minRotation);
             StartCoroutine (MoveNeedleOverTime (minRotation + (Torch.Instance.Battery * delta)));
         }
 

@@ -40,18 +40,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4157521310924617333}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8748845fab8d8fe4a9f051adddd9ab73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holsterSlotName: Large Weapon Holster
+  HolsterSlotName: 
   heldObject: {fileID: 5708444989548883608}
   lockHeldObject: 1
   allowedTypes: 3
-  infoText: {fileID: 0}
-  uiImage: {fileID: 0}
-  triggerRadius: 0.1
+  triggerRadius: 0.07
   sphereCollider: {fileID: 0}
 --- !u!135 &5818258107479462753
 SphereCollider:
@@ -64,7 +62,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.07
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2391985572006599233
 PrefabInstance:
@@ -76,6 +74,11 @@ PrefabInstance:
     - target: {fileID: 7929275771036333273, guid: ebec3303aaed5864392ea5ea6a35445c,
         type: 3}
       propertyPath: m_Name
+      value: Charger
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036333273, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_TagString
       value: Charger
       objectReference: {fileID: 0}
     - target: {fileID: 7929275771036428537, guid: ebec3303aaed5864392ea5ea6a35445c,
@@ -133,36 +136,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7929275771036333276, guid: ebec3303aaed5864392ea5ea6a35445c,
-        type: 3}
-      propertyPath: myHolster
-      value: 
-      objectReference: {fileID: 4157521310924617334}
     - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.47566348
       objectReference: {fileID: 0}
     - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.67268974
+      value: -0.5232058
       objectReference: {fileID: 0}
     - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.5232058
       objectReference: {fileID: 0}
     - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.73992467
+      value: 0.47566348
+      objectReference: {fileID: 0}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 84.55
       objectReference: {fileID: 0}
+    - target: {fileID: 4544986080731186849, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929275771036333276, guid: ebec3303aaed5864392ea5ea6a35445c,
+        type: 3}
+      propertyPath: myHolster
+      value: 
+      objectReference: {fileID: 4157521310924617334}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebec3303aaed5864392ea5ea6a35445c, type: 3}
 --- !u!1 &5708444989548883608 stripped

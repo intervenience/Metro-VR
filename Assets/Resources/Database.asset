@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78e176622bb4e6748ac309ffb807853c, type: 3}
+  m_Name: Database
+  m_EditorClassIdentifier: 
+  items:
+  - id: 0
+    gameObjectName: Kalashnikov
+    prefab: {fileID: 4772907410390982559, guid: f26442dc0dbf7e04498fe5ae780764b0,
+      type: 3}
+    magId: 0
+    magIn: 1
+  - id: 1
+    gameObjectName: Shotgun
+    prefab: {fileID: 3276961054014791950, guid: 2325369f00110a34c806954151b0967e,
+      type: 3}
+    magId: 1
+    magIn: 1
+  - id: 2
+    gameObjectName: Objective Jerrycan
+    prefab: {fileID: 5554293461252108418, guid: 8bf7957e23aa10f4792fa67b905f3bad,
+      type: 3}
+    magId: -1
+    magIn: 0
+  - id: 2
+    gameObjectName: Objective Jerrycan
+    prefab: {fileID: 5554293461252108418, guid: 8bf7957e23aa10f4792fa67b905f3bad,
+      type: 3}
+    magId: -1
+    magIn: 0
+  magazines:
+  - id: 0
+    gameObjectName: Kalashnikov Magazine
+    prefab: {fileID: 5638392973968870417, guid: f98a78d845bbe114e85c2a0ecded1fd6,
+      type: 3}
+  - id: 1
+    gameObjectName: Shotgun Shell
+    prefab: {fileID: 2830401223734129779, guid: 8a9cbc7df6c9958498a1686004e22fe9,
+      type: 3}
+  mobs:
+  - id: 0
+    mobName: Nosalis
+    prefab: {fileID: 3512258863436040204, guid: 31aff6d31a1bc5b4da5fb75bfca0b31a,
+      type: 3}

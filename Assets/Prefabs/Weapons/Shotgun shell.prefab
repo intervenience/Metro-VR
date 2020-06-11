@@ -116,7 +116,9 @@ MonoBehaviour:
   touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
   usingState: 0
   itemName: Shotgun Shell
+  id: 1
   itemType: 3
+  handPosition: {fileID: 0}
   ammoType: 2
   maxAmmo: 1
   currentAmmo: 1

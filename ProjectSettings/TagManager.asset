@@ -12,6 +12,9 @@ TagManager:
   - Charger
   - ObjectiveItem
   - Hitbox
+  - LargeItem
+  - SmallItem
+  - WorldObject
   layers:
   - Default
   - TransparentFX

@@ -1,8 +1,12 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.Events;
+
 using UnityEditor;
+
 using MetroVR.Interactables;
 
 namespace MetroVR.Editor {

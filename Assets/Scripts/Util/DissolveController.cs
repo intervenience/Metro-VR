@@ -25,7 +25,7 @@ namespace MetroVR.Util {
         }
 
         IEnumerator DissolveSequence (float timeTilDeath) {
-            var amt = m.GetVector ("_DissolveAmount");
+            var amt = m.GetVector ("DissolveAmount");
             Vector4 vector4 = new Vector4 (-1, -1, -1);
             float elapsed = 0;
             while (elapsed < timeTilDeath) {

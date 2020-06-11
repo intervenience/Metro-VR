@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4544986080731187038}
-  m_LocalRotation: {x: -0, y: 0.045521673, z: -0, w: -0.99896336}
+  m_LocalRotation: {x: 0.4767216, y: 0.52224183, z: 0.52224183, w: -0.4767216}
   m_LocalPosition: {x: 0.1074, y: 0, z: 0.135}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7929275771036428537}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 354.782, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 264.78198, z: 0}
 --- !u!1 &7929275771036333185
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,9 +985,10 @@ GameObject:
   - component: {fileID: 7929275771036333276}
   - component: {fileID: 7929275771036333274}
   - component: {fileID: 7929275771036333272}
+  - component: {fileID: 8319137461502987954}
   m_Layer: 8
   m_Name: Charger
-  m_TagString: Untagged
+  m_TagString: Charger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -999,8 +1000,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7929275771036333273}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.404, y: -0.459, z: -6.6679997}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.4242, y: 0.17719999, z: -1.1675999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7929275771036428539}
@@ -1049,9 +1050,9 @@ MonoBehaviour:
   isGrabbable: 1
   holdButtonToGrab: 1
   stayGrabbedOnTeleport: 1
-  validDrop: 1
+  validDrop: 2
   grabOverrideButton: 0
-  allowedGrabControllers: 0
+  allowedGrabControllers: 2
   grabAttachMechanicScript: {fileID: 7929275771036333274}
   secondaryGrabActionScript: {fileID: 0}
   isUsable: 1
@@ -1065,6 +1066,7 @@ MonoBehaviour:
   usingState: 0
   itemName: Charger
   itemType: 3
+  handPosition: {fileID: 0}
   myHolster: {fileID: 0}
   amountToCharge: 0.15
   timeBetweenUses: 0.5
@@ -1105,6 +1107,39 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &8319137461502987954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7929275771036333273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc2315305343a584e8758755b54117c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clipOnNearTouch: {fileID: 0}
+  strengthOnNearTouch: 0
+  durationOnNearTouch: 0
+  intervalOnNearTouch: 0.05
+  cancelOnNearUntouch: 1
+  clipOnTouch: {fileID: 0}
+  strengthOnTouch: 0.2
+  durationOnTouch: 0.1
+  intervalOnTouch: 0.05
+  cancelOnUntouch: 1
+  clipOnGrab: {fileID: 0}
+  strengthOnGrab: 0.3
+  durationOnGrab: 0.05
+  intervalOnGrab: 0.05
+  cancelOnUngrab: 1
+  clipOnUse: {fileID: 0}
+  strengthOnUse: 0.5
+  durationOnUse: 0
+  intervalOnUse: 0.05
+  cancelOnUnuse: 1
+  objectToAffect: {fileID: 0}
 --- !u!1 &7929275771036333275
 GameObject:
   m_ObjectHideFlags: 0

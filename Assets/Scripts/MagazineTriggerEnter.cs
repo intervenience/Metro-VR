@@ -29,8 +29,12 @@ namespace MetroVR {
                 nearbyMagazine = m;
 
                 if (m.itemName == "AK Magazine" && gun.itemName == "Kalashnikov") {
-                    closestControllerEvents = m.GetGrabbingObject ().GetComponent<VRTK_ControllerEvents> ();
-                    closestControllerEvents.GripReleased += ClosestControllerEvents_GripReleased;
+                    try {
+                        closestControllerEvents = m.GetGrabbingObject ().GetComponent<VRTK_ControllerEvents> ();
+                        closestControllerEvents.GripReleased += ClosestControllerEvents_GripReleased;
+                    } catch {
+                        Debug.LogWarning ("Potential error in magazine - sometimes occurs when moving and can be ignored.");
+                    }
                 }
             }
         }

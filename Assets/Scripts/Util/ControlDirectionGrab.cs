@@ -18,6 +18,7 @@ namespace MetroVR.Util {
         protected Quaternion initialRotation;
         protected Quaternion initialCameraRigRotation;
         protected Quaternion releaseRotation;
+        Quaternion offset;
         protected Coroutine snappingOnRelease;
 
         public ConfigurableJoint joint;
@@ -42,6 +43,8 @@ namespace MetroVR.Util {
             initialRotation = currentGrabbdObject.transform.localRotation;
 
             initialCameraRigRotation = cameraRig.localRotation;
+
+            offset = Quaternion.Inverse (initialCameraRigRotation);
 
             joint = currentGrabbdObject.GetComponent<ConfigurableJoint> ();
             joint.angularYMotion = ConfigurableJointMotion.Free;
@@ -113,6 +116,7 @@ namespace MetroVR.Util {
 
                 // calculate rightLocked rotation
                 Quaternion rightLocked = Quaternion.LookRotation (forward, Vector3.Cross (-primaryGrabbingObject.transform.right, forward).normalized);
+                Debug.Log ("FORWARD = " + rightLocked.eulerAngles.x + " " + rightLocked.eulerAngles.y + " " + rightLocked.eulerAngles.z);
 
                 // delta from current rotation to the rightLocked rotation
                 Quaternion rightLockedDelta = Quaternion.Inverse (grabbedObject.transform.rotation) * rightLocked;
@@ -155,9 +159,9 @@ namespace MetroVR.Util {
                 rightLocked *= Quaternion.Inverse (cameraRig.localRotation * Quaternion.Inverse (initialCameraRigRotation));
 
                 joint.targetRotation = (upLockedAngle < rightLockedAngle ? Quaternion.Inverse (upLocked) : Quaternion.Inverse (rightLocked));
-
-                // assign the one that involves less change to roll
-                //grabbedObject.transform.rotation = (upLockedAngle < rightLockedAngle ? upLocked : rightLocked);
+                Debug.Log ("TARGET ROTATION = " + joint.targetRotation.eulerAngles.x + " " + joint.targetRotation.eulerAngles.y + " " + joint.targetRotation.eulerAngles.z);
+                Debug.Log ("ACTUAL ROTATION = " + grabbedObject.transform.localRotation.eulerAngles.x + " " + grabbedObject.transform.localRotation.eulerAngles.y + " " + grabbedObject.transform.localRotation.eulerAngles.z);
+                
             }
 
         }

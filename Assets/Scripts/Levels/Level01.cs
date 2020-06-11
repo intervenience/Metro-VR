@@ -4,7 +4,7 @@ using MetroVR.NPC;
 
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,7 +12,10 @@ namespace MetroVR.Levels {
 
     public class Level01 : MonoBehaviour {
 
-        //[SerializeField] GameObject worldInteractableObjects;
+        Persistence persistence;
+        public Database database;
+
+        int currentStage = 0;
 
         public Transform currentObjective;
 
@@ -41,6 +44,15 @@ namespace MetroVR.Levels {
         [Header ("Post Generator Attack")]
         [SerializeField] GameObject[] postGenMobs;
 
+
+        private List<GameObject> allMobs {
+            get {
+                var t = trainMobs.Concat (postGenMobs).ToList ();
+                t.Add (generatorNosalis.gameObject);
+                return new List<GameObject> (t);
+            }
+        }
+
         bool exitDoorRotatorOpened = false;
 
         bool generatorFuelled = false;
@@ -55,6 +67,8 @@ namespace MetroVR.Levels {
             } else {
                 Destroy (gameObject);
             }
+
+            persistence = GetComponent<Persistence> ();
         }
 
         void Start () {
@@ -63,7 +77,7 @@ namespace MetroVR.Levels {
         
         void Update () {
             if (Input.GetKeyDown (KeyCode.Alpha1)) {
-                FirstDoorPowered ();
+                SetGameData ();
             }
 
             if (Input.GetKeyDown (KeyCode.Alpha2)) {
@@ -90,6 +104,8 @@ namespace MetroVR.Levels {
 
         public void GoneThroughFirstDoor () {
             currentObjective = endDoorTransform;
+            currentStage++;
+            persistence.Save ();
         }
 
         [SerializeField] List<Npc> triggeredMobs;
@@ -219,6 +235,173 @@ namespace MetroVR.Levels {
             ambientSound.Outro ();
             yield return new WaitForSeconds (12f);
             SceneManager.LoadScene (0);
+        }
+
+        void SetGameData () {
+            Debug.Log ("Start time " + Time.realtimeSinceStartup);
+            SaveData data = new SaveData ();
+            data.mobs = new List<MobPositionData> ();
+            data.worldObjects = new List<WorldObjectData> ();
+            data.itemData = new List<ItemData> ();
+
+            foreach (GameObject mob in allMobs) {
+                MobPositionData pos = new MobPositionData ();
+                pos.gameObjectName = mob.name;
+                var npc = mob.GetComponent<Npc> ();
+                pos.hp = npc.CurrentHP;
+                pos.id = npc.ID;
+                pos.position = mob.transform.position;
+                pos.rotation = mob.transform.rotation.eulerAngles;
+                pos.isActive = mob.activeSelf;
+                data.mobs.Add (pos);
+            }
+
+            List<GameObject> worldObjects = new List<GameObject> ();
+            worldObjects.AddRange (GameObject.FindGameObjectsWithTag ("ObjectiveItem"));
+            worldObjects.AddRange (GameObject.FindGameObjectsWithTag ("WorldObject"));
+
+            foreach (GameObject go in worldObjects) {
+                WorldObjectData pos = new WorldObjectData ();
+                pos.gameObjectName = go.name;
+                pos.position = go.transform.position;
+                pos.rotation = go.transform.rotation.eulerAngles;
+                data.worldObjects.Add (pos);
+            }
+
+            data.playspacePosition = VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.position;
+            data.playspaceRotation = VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.rotation.eulerAngles;
+            data.playerLocalPosition = VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition;
+
+            List<GameObject> items = new List<GameObject> ();
+            items.AddRange (GameObject.FindGameObjectsWithTag ("LargeItem"));
+            items.AddRange (GameObject.FindGameObjectsWithTag ("SmallItem"));
+            items.AddRange (GameObject.FindGameObjectsWithTag ("Magazine"));
+
+            foreach (GameObject go in items) {
+                ItemData itemData = new ItemData ();
+                var item = go.GetComponent<Item> ();
+                itemData.gameObjectName = go.name;
+                itemData.itemId = item.ID;
+                if (!item.IsGrabbed ()) {
+                    //If the item isn't grabbed and has no parent, ID = -1
+                    if (item.transform.parent == null)
+                        itemData.holsterId = -1;
+                    else
+                        itemData.holsterId = 2;
+                } else if (item.IsGrabbed ()) {
+                    //Left hand ID is 0, right hand ID is 1
+                    itemData.holsterId = item.GetGrabbingObject ().GetComponent<HandController> ().LeftOrRight == HandLeftOrRight.Left ? 0 : 1;
+                }
+                data.itemData.Add (itemData);
+            }
+            persistence.saveData = data;
+            persistence.Save ();
+            Debug.Log ("Start time " + Time.realtimeSinceStartup);
+        }
+
+        void SetupGameData () {
+            SaveData data = persistence.saveData;
+
+            //Playspace
+            VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.position = data.playspacePosition;
+            VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.rotation = Quaternion.Euler (data.playspaceRotation);
+            VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition = new Vector3 (data.playerLocalPosition.x, VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition.y, data.playerLocalPosition.z);
+
+            //Mobs
+            List<GameObject> allMobs = new List<GameObject> ();
+            allMobs.AddRange (trainMobs);
+            allMobs.AddRange (postGenMobs);
+            allMobs.Add (generatorNosalis.gameObject);
+            foreach (MobPositionData mob in data.mobs) {
+                try {
+                    //First, try find the object via name (not efficient, I know)
+                    //If this fails, we get a null value, so we just check for that and
+                    //create a new instance
+                    //Apply properties last
+                    GameObject myMob = allMobs.Where (i => i.name == mob.gameObjectName).FirstOrDefault ();
+
+                    if (myMob == null) {
+                        //Create a new instance of this mob
+                        //Have to search by ID, not index in case we are missing items
+                        myMob = Instantiate (database.mobs.Where (i => i.id == mob.id).FirstOrDefault ().prefab);
+                    }
+
+                    //then apply properties
+                    myMob.transform.position = mob.position;
+                    myMob.transform.rotation = Quaternion.Euler (mob.rotation);
+                    myMob.GetComponent<Npc> ().ForceSetHP (mob.hp);
+                    myMob.SetActive (mob.isActive);
+                } catch (System.Exception e) {
+                    Debug.LogWarning (e);
+                }
+            }
+
+            //Items
+            List<GameObject> allItems = new List<GameObject> ();
+            allItems.AddRange (GameObject.FindGameObjectsWithTag ("LargeItem"));
+            allItems.AddRange (GameObject.FindGameObjectsWithTag ("SmallItem"));
+            allItems.AddRange (GameObject.FindGameObjectsWithTag ("Magazine"));
+            foreach (ItemData item in data.itemData) {
+                try {
+                    GameObject myItem = allItems.Where (i => i.name == item.gameObjectName).FirstOrDefault ();
+
+                    if (myItem == null) {
+                        myItem = Instantiate (database.items.Where (i => i.id == item.holsterId).First ().prefab);
+                    }
+
+                    switch (item.holsterId) {
+                        default:
+                            myItem.transform.position = item.position;
+                            myItem.transform.rotation = Quaternion.Euler (item.rotation);
+                            break;
+                        case 0:
+                            VRTK.VRTK_SDKManager.instance.loadedSetup.actualLeftController.
+                                GetComponent<VRTK.VRTK_InteractTouch> ().ForceTouch (myItem);
+                            VRTK.VRTK_SDKManager.instance.loadedSetup.actualLeftController.
+                                GetComponent<VRTK.VRTK_InteractGrab> ().AttemptGrab ();
+                            break;
+                        case 1:
+                            VRTK.VRTK_SDKManager.instance.loadedSetup.actualRightController.
+                                GetComponent<VRTK.VRTK_InteractTouch> ().ForceTouch (myItem);
+                            VRTK.VRTK_SDKManager.instance.loadedSetup.actualRightController.
+                                GetComponent<VRTK.VRTK_InteractGrab> ().AttemptGrab ();
+                            break;
+                        case 2:
+                            switch (myItem.tag) {
+                                case "Magazine":
+
+                                    break;
+                                case "Charger":
+
+                                    break;
+                                case "ObjectiveItem":
+                                    //Realistically we only get to this point for this type of item if they're attached to the objective
+                                    //So I'm just gonna do that.
+                                    generator.gameObject.GetComponent<VRTK.VRTK_SnapDropZone> ().ForceSnap (myItem);
+                                    break;
+                                default:
+
+                                    break;
+                            }
+                            break;
+                    }
+                } catch (System.Exception e) {
+                    Debug.LogWarning (e);
+                }
+            }
+
+            //World interactable objects
+            List<GameObject> allWorldObjects = new List<GameObject> ();
+            allWorldObjects.AddRange (GameObject.FindGameObjectsWithTag ("ObjectiveItem"));
+            allWorldObjects.AddRange (GameObject.FindGameObjectsWithTag ("WorldObject"));
+            foreach (WorldObjectData worldObject in data.worldObjects) {
+                GameObject myObj = allWorldObjects.Where (i => i.name == worldObject.gameObjectName).FirstOrDefault ();
+
+                if (myObj != null) {
+                    myObj.transform.position = worldObject.position;
+                    myObj.transform.rotation = Quaternion.Euler (worldObject.rotation);
+                }
+            }
         }
 
     }

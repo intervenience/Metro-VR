@@ -14,6 +14,8 @@ namespace MetroVR {
 
         [Header ("Item Properties")]
         public string itemName;
+        [SerializeField] private int id;
+        public int ID => id;
         public ItemTypes itemType;
         public HandPosition handPosition;
 
