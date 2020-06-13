@@ -32,7 +32,10 @@ namespace MetroVR {
         float horizontal = 0;
         float fwd = 0;
 
+        PlayerHealth hp;
+
         void Start () {
+            hp = GetComponent<PlayerHealth> ();
         }
 
         void OnEnable () {
@@ -165,6 +168,7 @@ namespace MetroVR {
 
         [SerializeField] Vector3 positionBeforeLean;
         private bool previousGroundedState = true;
+        private float fallStartHeight = 0;
         void FixedUpdate () {
             if (head != null && Levels.Level01.Instance.canMove) {
                 isGrounded = Physics.Raycast (new Vector3 (head.position.x, playerLegsCollider.transform.position.y + .43f * head.localPosition.y, head.position.z), Vector3.down, .65f * head.localPosition.y, 1 << 0);
@@ -213,6 +217,13 @@ namespace MetroVR {
                         torsoAudioSource.clip = landingSounds[Random.Range (0, landingSounds.Length)];
                         torsoAudioSource.Play ();
                     }
+                    float fallHeight = fallStartHeight - playerLegsTransform.position.y;
+                    if (fallHeight > 3.3f) {
+                        hp.TakeDamage (8f * (fallHeight / 3.3f));
+                    }
+                } else if (!isGrounded && previousGroundedState) {
+                    //If we aren't grounded anymore, but we just were, use this as the start fall height.
+                    fallStartHeight = playerLegsTransform.position.y;
                 }
 
                 previousGroundedState = isGrounded;

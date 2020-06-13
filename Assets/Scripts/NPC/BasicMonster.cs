@@ -123,8 +123,8 @@ namespace MetroVR.NPC {
             PickAttackStyle ();
         }
 
-        public override void TakeDamage (float amount) {
-            base.TakeDamage (amount);
+        public override void TakeDamage (float amount, bool soundOff) {
+            base.TakeDamage (amount, soundOff);
         }
 
         protected virtual void Loiter () {

@@ -22,17 +22,34 @@ namespace MetroVR.Util {
                 Instance = this;
             else
                 Destroy (gameObject);
-        }
 
-        void Start () {
             volume = GetComponent<PostProcessVolume> ();
             grain = volume.profile.GetSetting<Grain> ();
             vignette = volume.profile.GetSetting<Vignette> ();
             bloom = volume.profile.GetSetting<Bloom> ();
+
+            vignette.color.value = Color.black;
+            vignette.intensity.value = 10f;
+            vignette.center.value.x = 5;
         }
 
         float hp;
         Coroutine redFlashRoutine;
+
+        public void GameIsReady () {
+            StartCoroutine (BlackScreenToVignette ());
+        }
+
+        IEnumerator BlackScreenToVignette () {
+            yield return new WaitForSeconds (0.25f);
+            float elapsed = 0f;
+            vignette.center.value.x = 0.5f;
+            while (elapsed < .5f) {
+                vignette.intensity.value = Mathf.Lerp (10f, 0.2f, elapsed / 0.5f);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
 
         public void HealthUpdated (float currentHealth) {
             if (currentHealth < hp) {

@@ -11,6 +11,8 @@ namespace MetroVR {
 
     public class Inventory : MonoBehaviour {
 
+        public static Inventory Instance;
+
         public int largeSlotCount = 2;
         public int smallSlotCount = 4;
 
@@ -24,8 +26,10 @@ namespace MetroVR {
 
         public Transform[] largeSlots, smallSlots;
 
-        void Start () {
-            
+        void Awake () {
+            if (Instance == null) {
+                Instance = this;
+            }
         }
 
         void LateUpdate () {

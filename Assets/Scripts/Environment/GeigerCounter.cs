@@ -92,6 +92,8 @@ namespace MetroVR.Environmental {
             while (inHeavyRadiationZone) {
                 highLevelAudioSource.Play ();
                 yield return new WaitForSeconds (highLevelAudioSource.clip.length);
+                if (inHeavyRadiationZone)
+                    playerHealth.TakeDamage (20f);
             }
         }
 

@@ -209,7 +209,7 @@ namespace MetroVR.NPC {
             }
         }
 
-        public virtual void TakeDamage (float amount) {
+        public virtual void TakeDamage (float amount, bool soundOff) {
             if (damageable) {
                 hostileToPlayer = true;
                 state = NpcState.MoveToPlayer;

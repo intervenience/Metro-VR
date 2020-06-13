@@ -1,7 +1,7 @@
 ﻿
 using MetroVR.Environmental;
 using MetroVR.NPC;
-
+using MetroVR.Util;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,15 +69,26 @@ namespace MetroVR.Levels {
             }
 
             persistence = GetComponent<Persistence> ();
+            VRTK.VRTK_SDKManager.instance.LoadedSetupChanged += Instance_LoadedSetupChanged;
+        }
+
+        void OnDisable () {
+            VRTK.VRTK_SDKManager.instance.LoadedSetupChanged -= Instance_LoadedSetupChanged;
+        }
+
+        void Instance_LoadedSetupChanged (VRTK.VRTK_SDKManager sender, VRTK.VRTK_SDKManager.LoadedSetupChangeEventArgs e) {
+            SetupGameData ();
+            PostProcessControl.Instance.GameIsReady ();
         }
 
         void Start () {
+            //SetupGameData ();
             currentObjective = firstRoomCharger;
         }
         
         void Update () {
             if (Input.GetKeyDown (KeyCode.Alpha1)) {
-                SetGameData ();
+                SaveGameData ();
             }
 
             if (Input.GetKeyDown (KeyCode.Alpha2)) {
@@ -105,7 +116,7 @@ namespace MetroVR.Levels {
         public void GoneThroughFirstDoor () {
             currentObjective = endDoorTransform;
             currentStage++;
-            persistence.Save ();
+            SaveGameData ();
         }
 
         [SerializeField] List<Npc> triggeredMobs;
@@ -224,11 +235,11 @@ namespace MetroVR.Levels {
 
         public void PlayerReachedEndStairs () {
             //do outro thing
-            MetroVR.Util.PostProcessControl.Instance.PlayerDeath ();
-            StartCoroutine (Delay ());
+            PostProcessControl.Instance.PlayerDeath ();
+            StartCoroutine (EndOfLevelResetDelay ());
         }
 
-        IEnumerator Delay () {
+        IEnumerator EndOfLevelResetDelay () {
             yield return new WaitForSeconds (1f);
             canMove = false;
             yield return new WaitForSeconds (3f);
@@ -237,7 +248,17 @@ namespace MetroVR.Levels {
             SceneManager.LoadScene (0);
         }
 
-        void SetGameData () {
+        public void PlayerDeath () {
+            PostProcessControl.Instance.PlayerDeath ();
+            StartCoroutine (PlayerDeathResetDelay ());
+        }
+
+        IEnumerator PlayerDeathResetDelay () {
+            yield return new WaitForSeconds (5f);
+            SceneManager.LoadScene (0);
+        }
+
+        void SaveGameData () {
             Debug.Log ("Start time " + Time.realtimeSinceStartup);
             SaveData data = new SaveData ();
             data.mobs = new List<MobPositionData> ();
@@ -302,7 +323,12 @@ namespace MetroVR.Levels {
         void SetupGameData () {
             SaveData data = persistence.saveData;
 
+            if (data.levelStage > 0 && data.levelStage != 6) {
+
+            }
+
             //Playspace
+            Debug.Log (VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.name);
             VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.position = data.playspacePosition;
             VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.rotation = Quaternion.Euler (data.playspaceRotation);
             VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition = new Vector3 (data.playerLocalPosition.x, VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition.y, data.playerLocalPosition.z);
@@ -366,13 +392,25 @@ namespace MetroVR.Levels {
                             VRTK.VRTK_SDKManager.instance.loadedSetup.actualRightController.
                                 GetComponent<VRTK.VRTK_InteractGrab> ().AttemptGrab ();
                             break;
+                        //Holster id of 2 is a child-parent set up (ie how our snap drop zones work)
                         case 2:
                             switch (myItem.tag) {
                                 case "Magazine":
-
+                                    switch (myItem.GetComponent <Item> ().itemName) {
+                                        //Primary weapon is always the first slot
+                                        case "AK 2012 Magazine":
+                                        case "AK Magazine":
+                                            Inventory.Instance.smallSlots[0].GetComponent<VRTK.VRTK_SnapDropZone> ().ForceSnap (myItem);
+                                            break;
+                                        //For now I'm cheating, and every other weapon is the second slot
+                                        case "Shotgun Shell":
+                                            Inventory.Instance.smallSlots[1].GetComponent<VRTK.VRTK_SnapDropZone> ().ForceSnap (myItem);
+                                            break;
+                                    }
                                     break;
                                 case "Charger":
-
+                                    //Charger is the last small snap drop zone in the inventory
+                                    Inventory.Instance.smallSlots[3].GetComponent<VRTK.VRTK_SnapDropZone> ().ForceSnap (myItem);
                                     break;
                                 case "ObjectiveItem":
                                     //Realistically we only get to this point for this type of item if they're attached to the objective
@@ -380,7 +418,16 @@ namespace MetroVR.Levels {
                                     generator.gameObject.GetComponent<VRTK.VRTK_SnapDropZone> ().ForceSnap (myItem);
                                     break;
                                 default:
-
+                                    //Should just be the large weaponry here, and I'm lazy right now so we just procedurally
+                                    //snap objects (so we lose original position but it should work)
+                                    var largeSlot = Inventory.Instance.largeSlots[0].GetComponent<VRTK.VRTK_SnapDropZone> ();
+                                    //If we don't have a snapped object in slot 0, snap there.
+                                    if (largeSlot.GetCurrentSnappedObject () == null) {
+                                        largeSlot.ForceSnap (myItem);
+                                    } else {
+                                        //Otherwise use the second one.
+                                        Inventory.Instance.largeSlots[1].GetComponent<VRTK.VRTK_SnapDropZone> ().ForceSnap (myItem);
+                                    }
                                     break;
                             }
                             break;

@@ -22,14 +22,16 @@ namespace MetroVR {
             currentHp = MaxHP;
         }
 
-        public void TakeDamage (float amount) {
+        public void TakeDamage (float amount, bool soundOff = false) {
             currentHp -= amount;
             if (currentHp < 0) {
                 //do stuff for player death
-                voiceAudioSource.PlayOneShot (playerDeathClips[0]);
-                PostProcessControl.Instance.PlayerDeath ();
+                if (!soundOff)
+                    voiceAudioSource.PlayOneShot (playerDeathClips[0]);
+                Levels.Level01.Instance.PlayerDeath ();
             } else {
-                voiceAudioSource.PlayOneShot (playerHitClips[Random.Range (0, playerHitClips.Length)]);
+                if (!soundOff)
+                    voiceAudioSource.PlayOneShot (playerHitClips[Random.Range (0, playerHitClips.Length)]);
                 if (regenHpRoutine != null) {
                     StopCoroutine (regenHpRoutine);
                 }
@@ -52,15 +54,15 @@ namespace MetroVR {
 
         public void EnteredHeavyRadioactiveZone () {
             outsideOrInRadioactiveZone = true;
-            if (!maskEquipped) {
+            /*if (!maskEquipped) {
                 if (oxygenRoutine != null) {
                     StopCoroutine (oxygenRoutine);
                 }
-                oxygenRoutine = StartCoroutine (RadioactiveZoneBreathing ());
-            }
+                oxygenRoutine = StartCoroutine (ToxicAreaBreathing ());
+            }*/
         }
 
-        IEnumerator RadioactiveZoneBreathing () {
+        IEnumerator ToxicAreaBreathing () {
             yield return new WaitForSeconds (3f);
             for (int i = 0; i < playerCoughingClips.Length; i++) {
                 voiceAudioSource.clip = playerCoughingClips[i];
