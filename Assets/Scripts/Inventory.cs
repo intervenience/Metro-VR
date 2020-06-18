@@ -62,7 +62,19 @@ namespace MetroVR {
             head = sender.loadedSetup.actualHeadset.transform;
             Debug.Log (head.gameObject);
             inventoryContainer = Instantiate (new GameObject ("Inventory Container"), playspace).transform;
-            largeSlots = new Transform[largeSlotCount];
+
+            foreach (Transform largeSlot in largeSlots) {
+                largeSlot.localScale = new Vector3 (0.15f, 0.15f, 0.15f);
+                largeSlot.parent = inventoryContainer;
+            }
+
+            foreach (Transform smallSlot in smallSlots) {
+                smallSlot.localScale = new Vector3 (0.1f, 0.1f, 0.1f);
+                smallSlot.parent = inventoryContainer;
+            }
+
+            /*largeSlots = new Transform[largeSlotCount];
+
             for (int i = 0; i < largeSlotCount; i++) {
                 GameObject largeZone = Instantiate (snapZonePrefab, inventoryContainer);
                 largeZone.name = "Large slot " + i;
@@ -78,7 +90,7 @@ namespace MetroVR {
             go.name = "Small slot 2";
             go.transform.localScale = new Vector3 (.1f, .1f, .1f);
             smallSlots[2] = go.transform;
-            smallSlots[smallSlotCount-1] = Instantiate (snapZoneChargerPrefab, inventoryContainer).transform;
+            smallSlots[smallSlotCount-1] = Instantiate (snapZoneChargerPrefab, inventoryContainer).transform;*/
         }
         
     }

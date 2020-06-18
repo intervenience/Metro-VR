@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4544986080731187038}
-  m_LocalRotation: {x: 0.4767216, y: 0.52224183, z: 0.52224183, w: -0.4767216}
+  m_LocalRotation: {x: -0.5222405, y: 0.47672302, z: -0.4767202, w: -0.52224314}
   m_LocalPosition: {x: 0.1074, y: 0, z: 0.135}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7929275771036428537}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: -90, y: 264.78198, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 180, z: -95.21799}
 --- !u!1 &7929275771036333185
 GameObject:
   m_ObjectHideFlags: 0
@@ -1065,6 +1065,7 @@ MonoBehaviour:
   touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
   usingState: 0
   itemName: Charger
+  id: 0
   itemType: 3
   handPosition: {fileID: 0}
   myHolster: {fileID: 0}

@@ -31,7 +31,7 @@ namespace MetroVR.NPC {
         private void PickAttackStyle () {
             if (!attackingInProgress) {
                 var f = Random.Range (0f, 1f);
-                if (f < .5f) {
+                if (f < .8f) {
                     LungeAtPlayer ();
                 } else {
                     SwipeAtPlayer ();
@@ -49,18 +49,27 @@ namespace MetroVR.NPC {
         IEnumerator SwipePlayerRoutine () {
             attackingInProgress = true;
             yield return new WaitForSeconds (PlaySnarlAnimation ());
-            RaycastHit hit;
+            //RaycastHit hit;
             animator.SetInteger ("Attack", Random.Range (0, 4));
             yield return new WaitForSeconds (.533f / 2f);
             Vector3 startRayPosition = transform.position;
             startRayPosition.y += 0.5f;
-            Debug.DrawRay (startRayPosition, (playerHead.position - transform.position).normalized, Color.red, 3f);
-            if (Physics.Raycast (startRayPosition, (playerHead.position - transform.position).normalized, out hit, 2f)) {
+            Vector3 targetPosition = new Vector3 (playerHead.position.x, playerBoundary.position.y / 2, playerHead.position.x);
+            Debug.DrawRay (startRayPosition, (targetPosition - transform.position).normalized, Color.red, 3f);
+            
+            var hits = Physics.RaycastAll (startRayPosition, (targetPosition - transform.position).normalized, 2f);
+            foreach (RaycastHit raycastHit in hits) {
+                if (raycastHit.collider.tag == "Player") {
+                    raycastHit.collider.GetComponentInParent<IDamage> ().TakeDamage (15f);
+                }
+            }
+
+            /*if (Physics.Raycast (startRayPosition, (playerHead.position - transform.position).normalized, out hit, 2f)) {
                 Debug.Log ("Mob hit: " + hit.collider.gameObject);
                 if (hit.collider.tag == "Player") {
                     hit.collider.GetComponent<IDamage> ().TakeDamage (15f);
                 }
-            }
+            }*/
             yield return new WaitForSeconds (.533f / 2f);
             animator.SetInteger ("Attack", -1);
 
@@ -80,26 +89,31 @@ namespace MetroVR.NPC {
             yield return new WaitForSeconds (PlaySnarlAnimation ());
             Vector3 startRayPosition = transform.position;
             startRayPosition.y += 0.5f;
-            Vector3 targetPosition = new Vector3 (playerHead.position.x, playerHead.position.y - 0.3f, playerHead.position.z);
+            Vector3 targetPosition = new Vector3 (playerHead.position.x, playerHead.position.y / 2f, playerHead.position.z);
 
             Vector3 displacement = 2 * (targetPosition - startRayPosition).normalized;
             displacement.y /= 2f;
             nav.destination = targetPosition + displacement;
             nav.isStopped = false;
-            nav.speed *= 2f;
             animator.SetTrigger ("JumpAttack");
             yield return new WaitForSeconds (.3f);
-            RaycastHit hit;
+            //RaycastHit hit;
             Debug.DrawLine (transform.position, targetPosition + displacement, Color.cyan, 3f);
-            if (Physics.Linecast (transform.position, targetPosition + displacement, out hit)) {
-                Debug.Log ("Mob hit: " + hit.collider.gameObject);
-                if (hit.collider.tag == "Player") {
-                    hit.collider.GetComponent<IDamage> ().TakeDamage (15f);
+
+            var hits = Physics.RaycastAll (startRayPosition, (targetPosition - transform.position).normalized * 1.5f, 2f);
+            foreach (RaycastHit raycastHit in hits) {
+                if (raycastHit.collider.tag == "Player") {
+                    raycastHit.collider.GetComponentInParent<IDamage> ().TakeDamage (25);
                 }
             }
+
+            /*if (Physics.Linecast (transform.position, targetPosition + displacement, out hit)) {
+                if (hit.collider.tag == "Player") {
+                    hit.collider.GetComponentInParent<IDamage> ().TakeDamage (25f);
+                }
+            }*/
             animator.ResetTrigger ("JumpAttack");
             yield return new WaitForSeconds (.2f);
-            nav.speed /= 2f;
 
             preattackRoutine = StartCoroutine (WaitForRandomTimeToBeginAttacking ());
         }
@@ -128,7 +142,7 @@ namespace MetroVR.NPC {
         }
 
         protected virtual void Loiter () {
-            nav.destination = Vector3.Distance (transform.position, playerHead.position) > 1.5f ? (new Vector3 (playerHead.position.x, playerBoundary.position.y, playerHead.position.z)) : transform.position;
+            nav.destination = Vector3.Distance (transform.position, new Vector3 (playerHead.position.x, playerBoundary.position.y, playerHead.position.z)) > 1.5f ? (new Vector3 (playerHead.position.x, playerBoundary.position.y, playerHead.position.z)) : transform.position;
         }
 
     }

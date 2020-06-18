@@ -41,7 +41,7 @@ namespace MetroVR.Util {
         }
 
         IEnumerator BlackScreenToVignette () {
-            yield return new WaitForSeconds (0.25f);
+            yield return new WaitForSeconds (2.5f);
             float elapsed = 0f;
             vignette.center.value.x = 0.5f;
             while (elapsed < .5f) {
@@ -49,6 +49,8 @@ namespace MetroVR.Util {
                 elapsed += Time.deltaTime;
                 yield return null;
             }
+            //For some reason it doesn't seem to completely reset vignette?
+            vignette.intensity.value = 0.2f;
         }
 
         public void HealthUpdated (float currentHealth) {
@@ -107,6 +109,7 @@ namespace MetroVR.Util {
         }
 
         public void ExitedHeavyRadioactiveZone () {
+            Debug.Log ("Is this being called?");
             inRadiationZone = false;
         }
 
@@ -124,9 +127,13 @@ namespace MetroVR.Util {
                     grain.intensity.value -= 4f * Time.deltaTime;
                     grain.lumContrib.value -= 1f * Time.deltaTime;
                 }
+
+                Debug.Log ("Increasing grain intensity");
                 yield return new WaitForFixedUpdate ();
             }
+            Debug.Log ("Exited radiation zone " + inRadiationZone);
             while (grain.intensity.value > 0) {
+                Debug.Log ("Lowering grain intensity");
                 grain.intensity.value -= 10f * Time.deltaTime;
                 grain.intensity.value = Mathf.Clamp (grain.intensity.value, 0, 1);
                 grain.lumContrib.value -= 4f * Time.deltaTime;

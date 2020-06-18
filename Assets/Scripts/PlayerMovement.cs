@@ -114,7 +114,7 @@ namespace MetroVR {
                     moveDirection = (horizontal * head.right + fwd * head.forward);
 
                     if (attemptJump && isGrounded) {
-                        cameraRigRb.AddForce (0, 8f, 0, ForceMode.Impulse);
+                        cameraRigRb.AddForce (0, 5f, 0, ForceMode.Impulse);
                         torsoAudioSource.clip = jumpSounds[Random.Range (0, jumpSounds.Length)];
                         torsoAudioSource.Play ();
                     }
@@ -129,15 +129,20 @@ namespace MetroVR {
             }
         }
 
-        float movementX = 0;
-        float movementY = 0;
-        float rotationX = 0;
-        float rotationY = 0;
+        private float movementX = 0;
+        private float movementY = 0;
+        private float rotationX = 0;
+        private float rotationY = 0;
+        private bool sprinting = false;
         void GetMovementInputs (VRTK_ControllerEvents movement, VRTK_ControllerEvents rotation) {
             if (rotationX == 0 && (rotation.GetTouchpadAxis ().x > 0.3f || rotation.GetTouchpadAxis ().x < 0.3f)) {
                 playRotationSound = true;
             } else {
                 playRotationSound = false;
+            }
+
+            if (movement.touchpadPressed) {
+                sprinting = !sprinting;
             }
 
             movementX = movement.GetTouchpadAxis ().x;
@@ -155,6 +160,10 @@ namespace MetroVR {
             else
                 fwd = 0;
 
+            //If we are sprinting, multiply speeds by 1.4f;
+            fwd *= sprinting == true ? 1.4f : 1;
+            horizontal *= sprinting == true ? 1.4f : 1;
+
             if (Mathf.Abs (rotationX) > deadzone) {
                 cameraRig.RotateAround (new Vector3 (head.position.x, 0, head.position.z), Vector3.up, rotationX * rotationSpeed * Time.deltaTime);
             }
@@ -171,6 +180,7 @@ namespace MetroVR {
         private float fallStartHeight = 0;
         void FixedUpdate () {
             if (head != null && Levels.Level01.Instance.canMove) {
+
                 isGrounded = Physics.Raycast (new Vector3 (head.position.x, playerLegsCollider.transform.position.y + .43f * head.localPosition.y, head.position.z), Vector3.down, .65f * head.localPosition.y, 1 << 0);
 
                 Footsteps ();
@@ -209,6 +219,7 @@ namespace MetroVR {
                 playerTorsoCollider.height = 0.42f * head.localPosition.y;
 
                 cameraRigRb.velocity = new Vector3 (moveDirection.x, cameraRigRb.velocity.y, moveDirection.z);
+
                 timeSinceLastFootstep += Time.fixedDeltaTime;
                 
                 if (!previousGroundedState && isGrounded) {

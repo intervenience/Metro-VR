@@ -72,11 +72,13 @@ namespace MetroVR.NPC {
 
             if (playerHead != null) {
                 if (hostileToPlayer) {
-                    state = Vector3.Distance (transform.position, playerHead.position) > 5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
+                    state = Vector3.Distance (transform.position, new Vector3(playerHead.position.x, playerBoundary.position.y, playerHead.position.z)) > 5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
                 } else {
                     state = NpcState.Idle;
                 }
             }
+
+            nav.speed += Random.Range (1 / 10 * -nav.speed, 1 / 10 * nav.speed);
         }
 
         public virtual void ForceSetHP (float hp) {
@@ -87,7 +89,7 @@ namespace MetroVR.NPC {
             if (currentHp > 0) {
                 if (playerHead != null) {
                     if (hostileToPlayer) {
-                        state = Vector3.Distance (transform.position, playerHead.position) > 1.5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
+                        state = Vector3.Distance (transform.position, new Vector3 (playerHead.position.x, playerBoundary.position.y, playerHead.position.z)) > 1.5f ? NpcState.MoveToPlayer : NpcState.FightingPlayer;
                     } else {
                         state = NpcState.Idle;
                     }

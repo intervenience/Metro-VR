@@ -78,7 +78,7 @@ namespace MetroVR {
         }
 
         IEnumerator RegenHp () {
-            yield return new WaitForSeconds (4f);
+            yield return new WaitForSeconds (5f);
 
             while (currentHp < 100) {
                 currentHp += 5f;

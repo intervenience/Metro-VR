@@ -67,7 +67,6 @@ namespace MetroVR.Environmental {
             } else if (str == 7) {
                 inHeavyRadiationZone = false;
                 StopCoroutine (longGeiger);
-                playerHealth.ExitedHeavyRadioactiveZone ();
                 highLevelAudioSource.Stop ();
                 PostProcessControl.Instance.ExitedHeavyRadioactiveZone ();
             }
@@ -84,7 +83,6 @@ namespace MetroVR.Environmental {
                 mainAudioSource.Play ();
                 yield return new WaitForSeconds (mainAudioSource.clip.length + (1.5f / activeZoneStrength) + Random.Range (-.125f, .25f));
                 lastClip = temp;
-                //Debug.Log (activeZoneStrength);
             }
         }
 

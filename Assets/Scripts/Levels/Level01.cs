@@ -77,6 +77,7 @@ namespace MetroVR.Levels {
         }
 
         void Instance_LoadedSetupChanged (VRTK.VRTK_SDKManager sender, VRTK.VRTK_SDKManager.LoadedSetupChangeEventArgs e) {
+            persistence.Load ();
             SetupGameData ();
             PostProcessControl.Instance.GameIsReady ();
         }
@@ -111,11 +112,11 @@ namespace MetroVR.Levels {
             var rb = doorObject.GetComponent<Rigidbody> ();
             rb.constraints = RigidbodyConstraints.None;
             currentObjective = doorObject.transform;
+            currentStage++;
         }
 
         public void GoneThroughFirstDoor () {
             currentObjective = endDoorTransform;
-            currentStage++;
             SaveGameData ();
         }
 
@@ -150,10 +151,13 @@ namespace MetroVR.Levels {
                 yield return new WaitForSeconds (0.5f);
             }
             triggeredMobs.Clear ();
-            if (first)
+            if (first) {
                 ambientSound.CombatEnd ();
-            else
+            } else {
                 ambientSound.SecondCombatEnd ();
+            }
+            currentStage++;
+            StartCoroutine (SaveGameAfterDelay ());
         }
 
         public void ExitDoorRotatorReachedMax () {
@@ -171,7 +175,7 @@ namespace MetroVR.Levels {
 
         IEnumerator BrokenDoorAnim () {
             float elapsed = 0f;
-            float y = endDoorTransform.position.y;
+            float y;
             doorAudioSource.clip = doorMoveStart;
             doorAudioSource.Play ();
             yield return new WaitForSeconds (1.5f);
@@ -186,7 +190,7 @@ namespace MetroVR.Levels {
 
         IEnumerator FullDoorAnim () {
             float elapsed = 0f;
-            float y = endDoorTransform.position.y;
+            float y;
             doorAudioSource.clip = doorMoveStart;
             doorAudioSource.Play ();
             yield return new WaitForSeconds (1.5f);
@@ -209,16 +213,23 @@ namespace MetroVR.Levels {
             generatorAudioSource.clip = generatorLoop;
             generatorAudioSource.loop = true;
             generatorAudioSource.PlayDelayed ((ulong) generatorPowerOn.length);
+            currentStage++;
             if (exitDoorRotatorOpened) {
                 //open door the rest of the way
                 StartCoroutine (FullDoorAnim ());
             }
+            StartCoroutine (SaveGameAfterDelay ());
         }
 
         public void PlayerTooCloseToGeneratorNosalis () {
             if (generatorNosalis.CurrentHP > 0) {
                 generatorNosalis.ForceState (NPC.NpcState.FightingPlayer);
             }
+        }
+
+        IEnumerator SaveGameAfterDelay () {
+            yield return new WaitForSeconds (3f);
+            SaveGameData ();
         }
 
         public void AfterGeneratorPoweredTrigger () {
@@ -261,6 +272,7 @@ namespace MetroVR.Levels {
         void SaveGameData () {
             Debug.Log ("Start time " + Time.realtimeSinceStartup);
             SaveData data = new SaveData ();
+            data.levelStage = currentStage;
             data.mobs = new List<MobPositionData> ();
             data.worldObjects = new List<WorldObjectData> ();
             data.itemData = new List<ItemData> ();
@@ -311,13 +323,19 @@ namespace MetroVR.Levels {
                         itemData.holsterId = 2;
                 } else if (item.IsGrabbed ()) {
                     //Left hand ID is 0, right hand ID is 1
-                    itemData.holsterId = item.GetGrabbingObject ().GetComponent<HandController> ().LeftOrRight == HandLeftOrRight.Left ? 0 : 1;
+                    try {
+                        itemData.holsterId = item.GetGrabbingObject ().GetComponent<HandController> ().LeftOrRight == HandLeftOrRight.Left ? 0 : 1;
+                    } catch (System.Exception e) {
+                        Debug.LogError (e + "\nOn gameobject: " + go.name);
+                        //In the event of an unexpected error, set the id to -1
+                        itemData.holsterId = -1;
+                    }
                 }
                 data.itemData.Add (itemData);
             }
             persistence.saveData = data;
             persistence.Save ();
-            Debug.Log ("Start time " + Time.realtimeSinceStartup);
+            Debug.Log ("End time " + Time.realtimeSinceStartup);
         }
 
         void SetupGameData () {
@@ -325,10 +343,13 @@ namespace MetroVR.Levels {
 
             if (data.levelStage > 0 && data.levelStage != 6) {
 
+            } else {
+                return;
             }
 
+            currentStage = data.levelStage;
+
             //Playspace
-            Debug.Log (VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.name);
             VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.position = data.playspacePosition;
             VRTK.VRTK_SDKManager.instance.loadedSetup.actualBoundaries.transform.rotation = Quaternion.Euler (data.playspaceRotation);
             VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition = new Vector3 (data.playerLocalPosition.x, VRTK.VRTK_SDKManager.instance.loadedSetup.actualHeadset.transform.localPosition.y, data.playerLocalPosition.z);
