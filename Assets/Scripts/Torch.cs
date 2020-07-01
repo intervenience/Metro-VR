@@ -25,7 +25,7 @@ namespace MetroVR {
 
         [SerializeField]
         [Range (0f, 1f)]
-        float battery = .5f;
+        float battery = .2f;
         public float Battery {
             get {
                 return battery;

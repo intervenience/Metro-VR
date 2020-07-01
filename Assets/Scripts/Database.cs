@@ -1,11 +1,11 @@
 ﻿
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 
 namespace MetroVR { 
 
+    //Refer to the Editor/DatabaseInspector.cs for this files visibility in the inspector
     [System.Serializable]
     [CreateAssetMenu (fileName = "Database")]
     public class Database : ScriptableObject {

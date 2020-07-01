@@ -101,6 +101,7 @@ namespace MetroVR {
         Vector3 moveDirection = Vector3.zero;
         bool attemptJump = false;
         bool playRotationSound = false;
+        float timeSinceLastRotationSound = 0f;
 
         void Update () {
             if (Levels.Level01.Instance.canMove) {
@@ -114,16 +115,9 @@ namespace MetroVR {
                     moveDirection = (horizontal * head.right + fwd * head.forward);
 
                     if (attemptJump && isGrounded) {
-                        cameraRigRb.AddForce (0, 5f, 0, ForceMode.Impulse);
+                        cameraRigRb.AddForce (0, 6.3f, 0, ForceMode.Impulse);
                         torsoAudioSource.clip = jumpSounds[Random.Range (0, jumpSounds.Length)];
                         torsoAudioSource.Play ();
-                    }
-                    if (playRotationSound) {
-                        var f = Random.Range (0f, 1f);
-                        if (f < 0.4f) {
-                            rotationAudioSource.clip = rotationClips[Random.Range (0, rotationClips.Length)];
-                            rotationAudioSource.Play ();
-                        }
                     }
                 }
             }
@@ -135,10 +129,10 @@ namespace MetroVR {
         private float rotationY = 0;
         private bool sprinting = false;
         void GetMovementInputs (VRTK_ControllerEvents movement, VRTK_ControllerEvents rotation) {
-            if (rotationX == 0 && (rotation.GetTouchpadAxis ().x > 0.3f || rotation.GetTouchpadAxis ().x < 0.3f)) {
-                playRotationSound = true;
+            if (rotationX == 0 && (rotation.GetTouchpadAxis ().x < -0.7f || rotation.GetTouchpadAxis ().x < 0.7f)) {
+                //playRotationSound = true;
             } else {
-                playRotationSound = false;
+                //playRotationSound = false;
             }
 
             if (movement.touchpadPressed) {
@@ -221,7 +215,17 @@ namespace MetroVR {
                 cameraRigRb.velocity = new Vector3 (moveDirection.x, cameraRigRb.velocity.y, moveDirection.z);
 
                 timeSinceLastFootstep += Time.fixedDeltaTime;
-                
+                timeSinceLastRotationSound += Time.fixedDeltaTime;
+
+
+                /*if (playRotationSound && timeSinceLastRotationSound > 2f) {
+                    var f = Random.Range (0f, 1f);
+                    if (f < 0.4f) {
+                        rotationAudioSource.clip = rotationClips[Random.Range (0, rotationClips.Length)];
+                        rotationAudioSource.Play ();
+                    }
+                }*/
+
                 if (!previousGroundedState && isGrounded) {
                     //If we weren't grounded and now we are, play sound effect if y velocity < -3f
                     if (cameraRigRb.velocity.y < -3f) {

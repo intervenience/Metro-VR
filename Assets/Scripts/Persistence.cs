@@ -28,6 +28,7 @@ namespace MetroVR {
             //Create a backup
             if (File.Exists (Path.Combine (Application.persistentDataPath, saveFileName))) {
                 File.Copy (Path.Combine (Application.persistentDataPath, saveFileName), Path.Combine (Application.persistentDataPath, tempFileName));
+                File.Delete (Path.Combine (Application.persistentDataPath, saveFileName));
             }
 
             FileStream fs = File.Open (Path.Combine (Application.persistentDataPath, saveFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);

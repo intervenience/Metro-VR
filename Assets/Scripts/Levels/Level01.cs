@@ -89,6 +89,7 @@ namespace MetroVR.Levels {
         
         void Update () {
             if (Input.GetKeyDown (KeyCode.Alpha1)) {
+                //FirstDoorPowered ();
                 SaveGameData ();
             }
 
@@ -112,12 +113,12 @@ namespace MetroVR.Levels {
             var rb = doorObject.GetComponent<Rigidbody> ();
             rb.constraints = RigidbodyConstraints.None;
             currentObjective = doorObject.transform;
-            currentStage++;
         }
 
         public void GoneThroughFirstDoor () {
+            currentStage = 1;
             currentObjective = endDoorTransform;
-            SaveGameData ();
+            StartCoroutine (SaveGameAfterDelay ());
         }
 
         [SerializeField] List<Npc> triggeredMobs;
@@ -153,23 +154,25 @@ namespace MetroVR.Levels {
             triggeredMobs.Clear ();
             if (first) {
                 ambientSound.CombatEnd ();
+                currentStage = 2;
             } else {
                 ambientSound.SecondCombatEnd ();
+                currentStage = 4;
             }
-            currentStage++;
             StartCoroutine (SaveGameAfterDelay ());
         }
 
         public void ExitDoorRotatorReachedMax () {
-            Debug.Log ("Done thing");
-            currentObjective = generator;
-            if (generatorFuelled && !exitDoorRotatorOpened) {
+            exitDoorRotatorOpened = true;
+            if (generatorFuelled) {
                 //do finalised things
                 StartCoroutine (FullDoorAnim ());
+                currentStage = 4;
             } else {
                 //play broken down animation
-                if (!exitDoorRotatorOpened)
-                    StartCoroutine (BrokenDoorAnim ());
+                currentObjective = generator;
+                StartCoroutine (BrokenDoorAnim ());
+                currentStage = 2;
             }
         }
 
@@ -178,14 +181,22 @@ namespace MetroVR.Levels {
             float y;
             doorAudioSource.clip = doorMoveStart;
             doorAudioSource.Play ();
-            yield return new WaitForSeconds (1.5f);
+            yield return new WaitForSeconds (doorMoveStart.length);
+            doorAudioSource.clip = doorMoveLoop;
+            doorAudioSource.loop = true;
+            doorAudioSource.Play ();
+            yield return new WaitForSeconds (.75f);
             while (elapsed < 4f) {
                 y = Mathf.Lerp (endDoorTransform.position.y, 2.1f, elapsed / 4f);
                 endDoorTransform.position = new Vector3 (endDoorTransform.position.x, y, endDoorTransform.position.z);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-            doorAudioSource.PlayOneShot (doorMoveEnd);
+            doorAudioSource.loop = false;
+            doorAudioSource.Stop ();
+            doorAudioSource.clip = doorMoveEnd;
+            doorAudioSource.Play ();
+            StartCoroutine (SaveGameAfterDelay ());
         }
 
         IEnumerator FullDoorAnim () {
@@ -193,17 +204,21 @@ namespace MetroVR.Levels {
             float y;
             doorAudioSource.clip = doorMoveStart;
             doorAudioSource.Play ();
-            yield return new WaitForSeconds (1.5f);
+            yield return new WaitForSeconds (doorMoveStart.length);
             doorAudioSource.clip = doorMoveLoop;
             doorAudioSource.loop = true;
             doorAudioSource.Play ();
+            yield return new WaitForSeconds (.75f);
             while (elapsed < 14f) {
                 y = Mathf.Lerp (endDoorTransform.position.y, 6f, elapsed / 14f);
                 endDoorTransform.position = new Vector3 (endDoorTransform.position.x, y, endDoorTransform.position.z);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-            doorAudioSource.PlayOneShot (doorMoveEnd);
+            doorAudioSource.loop = false;
+            doorAudioSource.Stop ();
+            doorAudioSource.clip = doorMoveEnd;
+            doorAudioSource.Play ();
         }
 
         public void GeneratorFuelled () {
@@ -213,7 +228,7 @@ namespace MetroVR.Levels {
             generatorAudioSource.clip = generatorLoop;
             generatorAudioSource.loop = true;
             generatorAudioSource.PlayDelayed ((ulong) generatorPowerOn.length);
-            currentStage++;
+            currentStage = 3;
             if (exitDoorRotatorOpened) {
                 //open door the rest of the way
                 StartCoroutine (FullDoorAnim ());
@@ -313,25 +328,27 @@ namespace MetroVR.Levels {
             foreach (GameObject go in items) {
                 ItemData itemData = new ItemData ();
                 var item = go.GetComponent<Item> ();
-                itemData.gameObjectName = go.name;
-                itemData.itemId = item.ID;
-                if (!item.IsGrabbed ()) {
-                    //If the item isn't grabbed and has no parent, ID = -1
-                    if (item.transform.parent == null)
-                        itemData.holsterId = -1;
-                    else
-                        itemData.holsterId = 2;
-                } else if (item.IsGrabbed ()) {
-                    //Left hand ID is 0, right hand ID is 1
-                    try {
-                        itemData.holsterId = item.GetGrabbingObject ().GetComponent<HandController> ().LeftOrRight == HandLeftOrRight.Left ? 0 : 1;
-                    } catch (System.Exception e) {
-                        Debug.LogError (e + "\nOn gameobject: " + go.name);
-                        //In the event of an unexpected error, set the id to -1
-                        itemData.holsterId = -1;
+                if (item != null) {
+                    itemData.gameObjectName = go.name;
+                    itemData.itemId = item.ID;
+                    if (!item.IsGrabbed ()) {
+                        //If the item isn't grabbed and has no parent, ID = -1
+                        if (item.transform.parent == null)
+                            itemData.holsterId = -1;
+                        else
+                            itemData.holsterId = 2;
+                    } else if (item.IsGrabbed ()) {
+                        //Left hand ID is 0, right hand ID is 1
+                        try {
+                            itemData.holsterId = item.GetGrabbingObject ().GetComponent<HandController> ().LeftOrRight == HandLeftOrRight.Left ? 0 : 1;
+                        } catch (System.Exception e) {
+                            Debug.LogError (e + "\nOn gameobject: " + go.name);
+                            //In the event of an unexpected error, set the id to -1
+                            itemData.holsterId = -1;
+                        }
                     }
+                    data.itemData.Add (itemData);
                 }
-                data.itemData.Add (itemData);
             }
             persistence.saveData = data;
             persistence.Save ();
@@ -470,9 +487,27 @@ namespace MetroVR.Levels {
                     myObj.transform.rotation = Quaternion.Euler (worldObject.rotation);
                 }
             }
+
+            PostLoadDataChecks ();
+        }
+
+        void PostLoadDataChecks () {
+            //If we've gone through the first door
+            if (currentStage > 1) {
+                FirstDoorPowered ();
+                currentObjective = endDoorTransform;
+            }
+            //If we've checked the exit gate
+            if (currentStage == 2) {
+                currentObjective = generator;
+            }
+            //If we've fuelled the generator
+            if (currentStage == 3) {
+                GeneratorFuelled ();
+                currentObjective = endDoorTransform;
+            }
         }
 
     }
 
 }
-

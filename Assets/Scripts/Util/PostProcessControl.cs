@@ -128,12 +128,12 @@ namespace MetroVR.Util {
                     grain.lumContrib.value -= 1f * Time.deltaTime;
                 }
 
-                Debug.Log ("Increasing grain intensity");
+                //Debug.Log ("Increasing grain intensity");
                 yield return new WaitForFixedUpdate ();
             }
-            Debug.Log ("Exited radiation zone " + inRadiationZone);
+            //Debug.Log ("Exited radiation zone " + inRadiationZone);
             while (grain.intensity.value > 0) {
-                Debug.Log ("Lowering grain intensity");
+                //Debug.Log ("Lowering grain intensity");
                 grain.intensity.value -= 10f * Time.deltaTime;
                 grain.intensity.value = Mathf.Clamp (grain.intensity.value, 0, 1);
                 grain.lumContrib.value -= 4f * Time.deltaTime;

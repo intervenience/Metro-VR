@@ -24,6 +24,7 @@ namespace MetroVR {
         Magazine nearbyMagazine;
 
         void OnTriggerEnter (Collider collider) {
+            //Debug.Log ("Magazine trigger enter found " + collider.gameObject.name);
             if (collider.tag == "Magazine") {
                 var m = collider.GetComponentInParent<Magazine> ();
                 nearbyMagazine = m;

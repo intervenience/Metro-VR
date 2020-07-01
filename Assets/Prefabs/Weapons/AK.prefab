@@ -4911,7 +4911,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3357113535788164128}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0248, z: 0.1728}
+  m_LocalPosition: {x: 0, y: 0.0202, z: 0.1728}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4772907410390549439}
@@ -4928,8 +4928,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.05771041, y: 0.05901164, z: 0.14015102}
-  m_Center: {x: -0.0040653944, y: -0.012773424, z: -0.0016303062}
+  m_Size: {x: 0.05771041, y: 0.0933879, z: 0.14015102}
+  m_Center: {x: -0.0040653944, y: -0.029961556, z: -0.0016303062}
 --- !u!114 &4995053230989206325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4942,7 +4942,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e575e4a1cb64421468638285e97a2c76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gun: {fileID: 0}
+  gun: {fileID: 5416775331624883622}
 --- !u!1 &3502509731925517060
 GameObject:
   m_ObjectHideFlags: 0
@@ -5669,7 +5669,7 @@ PrefabInstance:
     - target: {fileID: 4262364219777280562, guid: f98a78d845bbe114e85c2a0ecded1fd6,
         type: 3}
       propertyPath: m_UseGravity
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f98a78d845bbe114e85c2a0ecded1fd6, type: 3}
